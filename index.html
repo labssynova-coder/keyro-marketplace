@@ -199,6 +199,12 @@ input { font-family: inherit; }
   flex-shrink: 0;
 }
 
+.search-result-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .search-result-info { flex: 1; }
 .search-result-name { font-size: 14px; font-weight: 500; }
 .search-result-meta { font-size: 12px; color: var(--fg-muted); }
@@ -294,12 +300,9 @@ input { font-family: inherit; }
 .hero-banner::before {
   content: '';
   position: absolute;
-  top: -50%;
-  right: -10%;
-  width: 60%;
-  height: 200%;
-  background: radial-gradient(ellipse, rgba(232,154,45,0.08) 0%, transparent 70%);
-  pointer-events: none;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(11,14,20,0.92) 0%, rgba(11,14,20,0.75) 50%, rgba(11,14,20,0.6) 100%);
+  z-index: 1;
 }
 
 .hero-badge {
@@ -313,6 +316,8 @@ input { font-family: inherit; }
   margin-bottom: 16px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  position: relative;
+  z-index: 2;
 }
 
 .hero h1 {
@@ -322,6 +327,8 @@ input { font-family: inherit; }
   line-height: 1.15;
   margin-bottom: 16px;
   max-width: 600px;
+  position: relative;
+  z-index: 2;
 }
 
 .hero h1 .highlight { color: var(--accent); }
@@ -331,12 +338,16 @@ input { font-family: inherit; }
   color: var(--fg-muted);
   max-width: 480px;
   margin-bottom: 28px;
+  position: relative;
+  z-index: 2;
 }
 
 .hero-actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
 }
 
 .btn-primary {
@@ -476,6 +487,15 @@ input { font-family: inherit; }
   justify-content: center;
   position: relative;
   overflow: hidden;
+}
+
+.product-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .product-card-img .platform-badge {
@@ -624,6 +644,13 @@ input { font-family: inherit; }
   justify-content: center;
   position: relative;
   overflow: hidden;
+}
+
+.pd-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius);
 }
 
 .pd-image .game-title-large {
@@ -895,6 +922,13 @@ input { font-family: inherit; }
   height: 50px;
   border-radius: 6px;
   flex-shrink: 0;
+}
+
+.cart-item-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
 }
 
 .cart-item-info { flex: 1; }
@@ -1593,23 +1627,42 @@ const PLATFORMS = [
 
 const GENRES = ['Action', 'RPG', 'Course', 'Sport', 'Horreur', 'Aventure', 'Carte Cadeau', 'Logiciel', 'Abonnement'];
 
+const STEAM_IMAGES = {
+  'cyberpunk-2077': 'https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg',
+  'elden-ring': 'https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg',
+  'gta-v': 'https://cdn.akamai.steamstatic.com/steam/apps/271590/header.jpg',
+  'red-dead-redemption-2': 'https://cdn.akamai.steamstatic.com/steam/apps/1174180/header.jpg',
+  'hogwarts-legacy': 'https://cdn.akamai.steamstatic.com/steam/apps/990080/header.jpg',
+  'god-of-war-ragnarok': 'https://cdn.akamai.steamstatic.com/steam/apps/1817070/header.jpg',
+  'starfield': 'https://cdn.akamai.steamstatic.com/steam/apps/1716740/header.jpg',
+  'zelda-totk': null,
+  'forza-horizon-5': 'https://cdn.akamai.steamstatic.com/steam/apps/1551360/header.jpg',
+  'baldurs-gate-3': 'https://cdn.akamai.steamstatic.com/steam/apps/1086940/header.jpg',
+  'ea-sports-fc-25': 'https://cdn.akamai.steamstatic.com/steam/apps/2473010/header.jpg',
+  'carte-steam-50': null,
+  'windows-11-pro': null,
+  'ps-plus-essential-12': null,
+  'resident-evil-4-remake': 'https://cdn.akamai.steamstatic.com/steam/apps/2050650/header.jpg',
+  'xbox-game-pass-ultimate-3': null,
+};
+
 const PRODUCTS = [
-  { id: 1, name: 'Cyberpunk 2077', platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 79.99, salePrice: 23.99, discount: 70, genres: ['Action', 'RPG'], slug: 'cyberpunk-2077', description: 'Plongez dans Night City, une mégalopole obsédée par le pouvoir, le glamour et les modifications corporelles. Incarnez V, un mercenaire hors-la-loi à la recherche d’un implant unique qui confère l’immortalité.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-3570K / AMD FX-8310', ram: '8 Go', gpu: 'NVIDIA GTX 970 / AMD RX 470', storage: '70 Go SSD' } },
-  { id: 2, name: 'Elden Ring', platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 59.99, salePrice: 49.99, discount: 17, genres: ['RPG'], slug: 'elden-ring', description: 'Un monde créé par Hidetaka Miyazaki et George R.R. Martin. Explorez l’Entre-Terre, un vaste monde ouvert rempli de dangers et de mystères.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-8400 / AMD Ryzen 3 3300X', ram: '12 Go', gpu: 'NVIDIA GTX 1060 6Go / AMD RX 580', storage: '60 Go' } },
-  { id: 3, name: 'GTA V', platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 29.99, salePrice: 14.99, discount: 50, genres: ['Action'], slug: 'gta-v', description: 'Le célèbre monde ouvert de Los Santos et Blaine County. Trois protagonistes, une histoire épique et un mode en ligne légendaire.', sysReqs: { os: 'Windows 8.1 64-bit', cpu: 'Intel Core 2 Quad Q6600 / AMD Phenom 9850', ram: '4 Go', gpu: 'NVIDIA GTX 660 / AMD HD 7870', storage: '72 Go' } },
-  { id: 4, name: 'Red Dead Redemption 2', platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 59.99, salePrice: 29.99, discount: 50, genres: ['Action'], slug: 'red-dead-redemption-2', description: 'L’Amérique, 1899. Arthur Morgan et la bande de Van der Linde fuient les autorités à travers l’Amérique sauvage.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-2500K / AMD FX-6300', ram: '8 Go', gpu: 'NVIDIA GTX 770 2Go / AMD RX 470', storage: '150 Go' } },
-  { id: 5, name: 'Hogwarts Legacy', platformId: 1, platform: 'Steam', region: 'EU', originalPrice: 59.99, salePrice: 39.99, discount: 33, genres: ['RPG'], slug: 'hogwarts-legacy', description: 'Vivez votre aventure à Poudlard. Explorez le château, apprenez la magie et découvrez les secrets du monde des sorciers au XIXème siècle.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-6600 / AMD Ryzen 5 1400', ram: '16 Go', gpu: 'NVIDIA GTX 960 / AMD RX 470', storage: '85 Go SSD' } },
-  { id: 6, name: 'God of War Ragnarök', platformId: 3, platform: 'PlayStation', region: 'EU', originalPrice: 69.99, salePrice: 49.99, discount: 29, genres: ['Action'], slug: 'god-of-war-ragnarok', description: 'Kratos et Atreus affrontent le destin du Ragnarök. Embarquez pour un voyage épique à travers les neuf royaumes nordiques.', sysReqs: { os: 'PlayStation 5', cpu: '-', ram: '-', gpu: '-', storage: '90 Go' } },
-  { id: 7, name: 'Starfield', platformId: 2, platform: 'Xbox', region: 'Global', originalPrice: 69.99, salePrice: 49.99, discount: 29, genres: ['RPG'], slug: 'starfield', description: 'De Bethesda Game Studios, Starfield est le premier univers original en 25 ans. Explorez l’espace et découvrez les mystères de la constellation.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-10600K / AMD Ryzen 5 3600X', ram: '16 Go', gpu: 'NVIDIA RTX 2080 / AMD RX 6800', storage: '125 Go SSD' } },
-  { id: 8, name: 'Zelda: Tears of the Kingdom', platformId: 4, platform: 'Nintendo', region: 'Europe', originalPrice: 69.99, salePrice: 59.99, discount: 14, genres: ['Aventure'], slug: 'zelda-totk', description: 'Link explore un Hyrule transformé. Des îles flottantes, de nouveaux pouvoirs et une aventure épique vous attendent.', sysReqs: { os: 'Nintendo Switch', cpu: '-', ram: '-', gpu: '-', storage: '18 Go' } },
-  { id: 9, name: 'Forza Horizon 5', platformId: 2, platform: 'Xbox', region: 'Global', originalPrice: 59.99, salePrice: 29.99, discount: 50, genres: ['Course'], slug: 'forza-horizon-5', description: 'Explorez les paysages vibrants du Mexique avec plus de 500 voitures de rêve. Courses, exploration et création en monde ouvert.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel i5-4460 / AMD Ryzen 3 1200', ram: '8 Go', gpu: 'NVIDIA GTX 970 / AMD RX 470', storage: '103 Go' } },
-  { id: 10, name: "Baldur's Gate 3", platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 59.99, salePrice: 47.99, discount: 20, genres: ['RPG'], slug: 'baldurs-gate-3', description: 'Un RPG épique de Larian Studios. Rassemblez votre compagnie et affrontez les ténèbres dans les Royaumes Oubliés.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel i5-4690 / AMD FX 8350', ram: '8 Go', gpu: 'NVIDIA GTX 970 / AMD RX 480', storage: '150 Go SSD' } },
-  { id: 11, name: 'EA SPORTS FC 25', platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 69.99, salePrice: 44.99, discount: 36, genres: ['Sport'], slug: 'ea-sports-fc-25', description: 'Le football nouvelle génération. FC 25 apporte des innovations de gameplay avec HypermotionV et des modes de jeu enrichis.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-10600K / AMD Ryzen 7 2700X', ram: '8 Go', gpu: 'NVIDIA GTX 1050 Ti / AMD RX 570', storage: '50 Go' } },
-  { id: 12, name: 'Carte Steam 50€', platformId: 5, platform: 'Carte Cadeau', region: 'EU', originalPrice: 50.00, salePrice: 47.49, discount: 5, genres: ['Carte Cadeau'], slug: 'carte-steam-50', description: 'Carte cadeau Steam d’une valeur de 50€. Idéale pour offrir ou créditer votre portefeuille Steam.', sysReqs: { os: '-', cpu: '-', ram: '-', gpu: '-', storage: '-' } },
-  { id: 13, name: 'Windows 11 Pro', platformId: 6, platform: 'Logiciel', region: 'Global', originalPrice: 259.00, salePrice: 29.99, discount: 88, genres: ['Logiciel'], slug: 'windows-11-pro', description: 'Clé de licence Windows 11 Professionnel. Activation immédiate, mise à jour depuis Windows 10 incluse.', sysReqs: { os: '-', cpu: '1 GHz dual-core 64-bit', ram: '4 Go', gpu: 'DirectX 12', storage: '64 Go' } },
-  { id: 14, name: 'PS Plus Essential 12 mois', platformId: 3, platform: 'PlayStation', region: 'EU', originalPrice: 99.99, salePrice: 74.99, discount: 25, genres: ['Abonnement'], slug: 'ps-plus-essential-12', description: 'Abonnement PlayStation Plus Essential pour 12 mois. Jeux mensuels, multijoueur en ligne et remises exclusives.', sysReqs: { os: 'PlayStation 4/5', cpu: '-', ram: '-', gpu: '-', storage: '-' } },
-  { id: 15, name: 'Resident Evil 4 Remake', platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 59.99, salePrice: 29.99, discount: 50, genres: ['Horreur'], slug: 'resident-evil-4-remake', description: 'Leon S. Kennedy est de retour. Une refonte complète du classique de la survie avec des graphismes modernes et un gameplay réinventé.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-7500 / AMD Ryzen 3 1200', ram: '8 Go', gpu: 'NVIDIA GTX 1050 Ti / AMD RX 560', storage: '55 Go SSD' } },
-  { id: 16, name: 'Xbox Game Pass Ultimate 3 mois', platformId: 2, platform: 'Xbox', region: 'EU', originalPrice: 44.99, salePrice: 34.99, discount: 22, genres: ['Abonnement'], slug: 'xbox-game-pass-ultimate-3', description: 'Accès Xbox Game Pass Ultimate pour 3 mois. Plus de 100 jeux sur console, PC et cloud.', sysReqs: { os: 'Xbox / Windows 10', cpu: '-', ram: '-', gpu: '-', storage: '-' } },
+  { id: 1, name: 'Cyberpunk 2077', image: STEAM_IMAGES['cyberpunk-2077'], platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 79.99, salePrice: 23.99, discount: 70, genres: ['Action', 'RPG'], slug: 'cyberpunk-2077', description: 'Plongez dans Night City, une mégalopole obsédée par le pouvoir, le glamour et les modifications corporelles. Incarnez V, un mercenaire hors-la-loi à la recherche d’un implant unique qui confère l’immortalité.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-3570K / AMD FX-8310', ram: '8 Go', gpu: 'NVIDIA GTX 970 / AMD RX 470', storage: '70 Go SSD' } },
+  { id: 2, name: 'Elden Ring', image: STEAM_IMAGES['elden-ring'], platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 59.99, salePrice: 49.99, discount: 17, genres: ['RPG'], slug: 'elden-ring', description: 'Un monde créé par Hidetaka Miyazaki et George R.R. Martin. Explorez l’Entre-Terre, un vaste monde ouvert rempli de dangers et de mystères.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-8400 / AMD Ryzen 3 3300X', ram: '12 Go', gpu: 'NVIDIA GTX 1060 6Go / AMD RX 580', storage: '60 Go' } },
+  { id: 3, name: 'GTA V', image: STEAM_IMAGES['gta-v'], platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 29.99, salePrice: 14.99, discount: 50, genres: ['Action'], slug: 'gta-v', description: 'Le célèbre monde ouvert de Los Santos et Blaine County. Trois protagonistes, une histoire épique et un mode en ligne légendaire.', sysReqs: { os: 'Windows 8.1 64-bit', cpu: 'Intel Core 2 Quad Q6600 / AMD Phenom 9850', ram: '4 Go', gpu: 'NVIDIA GTX 660 / AMD HD 7870', storage: '72 Go' } },
+  { id: 4, name: 'Red Dead Redemption 2', image: STEAM_IMAGES['red-dead-redemption-2'], platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 59.99, salePrice: 29.99, discount: 50, genres: ['Action'], slug: 'red-dead-redemption-2', description: 'L’Amérique, 1899. Arthur Morgan et la bande de Van der Linde fuient les autorités à travers l’Amérique sauvage.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-2500K / AMD FX-6300', ram: '8 Go', gpu: 'NVIDIA GTX 770 2Go / AMD RX 470', storage: '150 Go' } },
+  { id: 5, name: 'Hogwarts Legacy', image: STEAM_IMAGES['hogwarts-legacy'], platformId: 1, platform: 'Steam', region: 'EU', originalPrice: 59.99, salePrice: 39.99, discount: 33, genres: ['RPG'], slug: 'hogwarts-legacy', description: 'Vivez votre aventure à Poudlard. Explorez le château, apprenez la magie et découvrez les secrets du monde des sorciers au XIXème siècle.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-6600 / AMD Ryzen 5 1400', ram: '16 Go', gpu: 'NVIDIA GTX 960 / AMD RX 470', storage: '85 Go SSD' } },
+  { id: 6, name: 'God of War Ragnarök', image: STEAM_IMAGES['god-of-war-ragnarok'], platformId: 3, platform: 'PlayStation', region: 'EU', originalPrice: 69.99, salePrice: 49.99, discount: 29, genres: ['Action'], slug: 'god-of-war-ragnarok', description: 'Kratos et Atreus affrontent le destin du Ragnarök. Embarquez pour un voyage épique à travers les neuf royaumes nordiques.', sysReqs: { os: 'PlayStation 5', cpu: '-', ram: '-', gpu: '-', storage: '90 Go' } },
+  { id: 7, name: 'Starfield', image: STEAM_IMAGES['starfield'], platformId: 2, platform: 'Xbox', region: 'Global', originalPrice: 69.99, salePrice: 49.99, discount: 29, genres: ['RPG'], slug: 'starfield', description: 'De Bethesda Game Studios, Starfield est le premier univers original en 25 ans. Explorez l’espace et découvrez les mystères de la constellation.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-10600K / AMD Ryzen 5 3600X', ram: '16 Go', gpu: 'NVIDIA RTX 2080 / AMD RX 6800', storage: '125 Go SSD' } },
+  { id: 8, name: 'Zelda: Tears of the Kingdom', image: STEAM_IMAGES['zelda-totk'], platformId: 4, platform: 'Nintendo', region: 'Europe', originalPrice: 69.99, salePrice: 59.99, discount: 14, genres: ['Aventure'], slug: 'zelda-totk', description: 'Link explore un Hyrule transformé. Des îles flottantes, de nouveaux pouvoirs et une aventure épique vous attendent.', sysReqs: { os: 'Nintendo Switch', cpu: '-', ram: '-', gpu: '-', storage: '18 Go' } },
+  { id: 9, name: 'Forza Horizon 5', image: STEAM_IMAGES['forza-horizon-5'], platformId: 2, platform: 'Xbox', region: 'Global', originalPrice: 59.99, salePrice: 29.99, discount: 50, genres: ['Course'], slug: 'forza-horizon-5', description: 'Explorez les paysages vibrants du Mexique avec plus de 500 voitures de rêve. Courses, exploration et création en monde ouvert.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel i5-4460 / AMD Ryzen 3 1200', ram: '8 Go', gpu: 'NVIDIA GTX 970 / AMD RX 470', storage: '103 Go' } },
+  { id: 10, name: "Baldur's Gate 3", image: STEAM_IMAGES['baldurs-gate-3'], platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 59.99, salePrice: 47.99, discount: 20, genres: ['RPG'], slug: 'baldurs-gate-3', description: 'Un RPG épique de Larian Studios. Rassemblez votre compagnie et affrontez les ténèbres dans les Royaumes Oubliés.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel i5-4690 / AMD FX 8350', ram: '8 Go', gpu: 'NVIDIA GTX 970 / AMD RX 480', storage: '150 Go SSD' } },
+  { id: 11, name: 'EA SPORTS FC 25', image: STEAM_IMAGES['ea-sports-fc-25'], platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 69.99, salePrice: 44.99, discount: 36, genres: ['Sport'], slug: 'ea-sports-fc-25', description: 'Le football nouvelle génération. FC 25 apporte des innovations de gameplay avec HypermotionV et des modes de jeu enrichis.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-10600K / AMD Ryzen 7 2700X', ram: '8 Go', gpu: 'NVIDIA GTX 1050 Ti / AMD RX 570', storage: '50 Go' } },
+  { id: 12, name: 'Carte Steam 50€', image: STEAM_IMAGES['carte-steam-50'], platformId: 5, platform: 'Carte Cadeau', region: 'EU', originalPrice: 50.00, salePrice: 47.49, discount: 5, genres: ['Carte Cadeau'], slug: 'carte-steam-50', description: 'Carte cadeau Steam d’une valeur de 50€. Idéale pour offrir ou créditer votre portefeuille Steam.', sysReqs: { os: '-', cpu: '-', ram: '-', gpu: '-', storage: '-' } },
+  { id: 13, name: 'Windows 11 Pro', image: STEAM_IMAGES['windows-11-pro'], platformId: 6, platform: 'Logiciel', region: 'Global', originalPrice: 259.00, salePrice: 29.99, discount: 88, genres: ['Logiciel'], slug: 'windows-11-pro', description: 'Clé de licence Windows 11 Professionnel. Activation immédiate, mise à jour depuis Windows 10 incluse.', sysReqs: { os: '-', cpu: '1 GHz dual-core 64-bit', ram: '4 Go', gpu: 'DirectX 12', storage: '64 Go' } },
+  { id: 14, name: 'PS Plus Essential 12 mois', image: STEAM_IMAGES['ps-plus-essential-12'], platformId: 3, platform: 'PlayStation', region: 'EU', originalPrice: 99.99, salePrice: 74.99, discount: 25, genres: ['Abonnement'], slug: 'ps-plus-essential-12', description: 'Abonnement PlayStation Plus Essential pour 12 mois. Jeux mensuels, multijoueur en ligne et remises exclusives.', sysReqs: { os: 'PlayStation 4/5', cpu: '-', ram: '-', gpu: '-', storage: '-' } },
+  { id: 15, name: 'Resident Evil 4 Remake', image: STEAM_IMAGES['resident-evil-4-remake'], platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 59.99, salePrice: 29.99, discount: 50, genres: ['Horreur'], slug: 'resident-evil-4-remake', description: 'Leon S. Kennedy est de retour. Une refonte complète du classique de la survie avec des graphismes modernes et un gameplay réinventé.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-7500 / AMD Ryzen 3 1200', ram: '8 Go', gpu: 'NVIDIA GTX 1050 Ti / AMD RX 560', storage: '55 Go SSD' } },
+  { id: 16, name: 'Xbox Game Pass Ultimate 3 mois', image: STEAM_IMAGES['xbox-game-pass-ultimate-3'], platformId: 2, platform: 'Xbox', region: 'EU', originalPrice: 44.99, salePrice: 34.99, discount: 22, genres: ['Abonnement'], slug: 'xbox-game-pass-ultimate-3', description: 'Accès Xbox Game Pass Ultimate pour 3 mois. Plus de 100 jeux sur console, PC et cloud.', sysReqs: { os: 'Xbox / Windows 10', cpu: '-', ram: '-', gpu: '-', storage: '-' } },
 ];
 
 const REVIEWS = [
@@ -1983,7 +2036,9 @@ searchInput.addEventListener('input', function() {
   } else {
     searchResults.innerHTML = matches.map(p => `
       <div class="search-result-item" onclick="searchInput.value='';searchResults.classList.remove('open');navigate('#/product/${p.id}')">
-        <div class="search-result-thumb" style="background:${getGradient(p)};border-radius:6px;"></div>
+        <div class="search-result-thumb" style="${p.image ? '' : 'background:' + getGradient(p) + ';'};border-radius:6px;${p.image ? 'overflow:hidden' : ''}">
+          ${p.image ? '<img src="' + p.image + '" alt="' + p.name + '" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.style.background=\'' + getGradient(p) + '\'">' : ''}
+        </div>
         <div class="search-result-info">
           <div class="search-result-name">${p.name}</div>
           <div class="search-result-meta">${p.platform} &middot; ${p.region} &middot; ${p.genres.join(', ')}</div>
@@ -2072,7 +2127,7 @@ function renderHome(container) {
     <div class="container">
       <!-- Hero -->
       <section class="hero">
-        <div class="hero-banner">
+        <div class="hero-banner" style="background-image:url('https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg');background-size:cover;background-position:center;">
           <div class="hero-badge">&#127881; Jusqu'à -88% sur les meilleures clés</div>
           <h1>Vos jeux préférés,<br><span class="highlight">au meilleur prix.</span></h1>
           <p>Des milliers de clés numériques livrées instantanément. Steam, PlayStation, Xbox, Nintendo et plus encore.</p>
@@ -2153,10 +2208,11 @@ function productCard(p) {
   const wishlisted = isInWishlist(p.id);
   return `
     <div class="product-card" onclick="navigate('#/product/${p.id}')">
-      <div class="product-card-img" style="background:${gradient};">
+      <div class="product-card-img" style="${p.image ? '' : 'background:' + gradient + ';'}">
+        ${p.image ? '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.style.background=\'' + gradient + '\'">' : ''}
         <span class="platform-badge">${p.platform}</span>
         <span class="discount-badge">-${p.discount}%</span>
-        <div class="game-title-overlay">${p.name}</div>
+        ${!p.image ? '<div class="game-title-overlay">' + p.name + '</div>' : ''}
       </div>
       <div class="product-card-body">
         <div class="product-card-genre">${p.genres.join(' / ')}</div>
@@ -2205,8 +2261,9 @@ function renderProduct(container, id) {
 
         <div class="pd-grid">
           <div class="pd-left">
-            <div class="pd-image" style="background:${gradient};">
-              <div class="game-title-large">${p.name}</div>
+            <div class="pd-image" style="${p.image ? '' : 'background:' + gradient + ';'}">
+              ${p.image ? '<img src="' + p.image + '" alt="' + p.name + '" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius)" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.style.background=\'' + gradient + '\'">' : ''}
+              ${!p.image ? '<div class="game-title-large">' + p.name + '</div>' : ''}
             </div>
 
             <div style="margin-top:24px;">
@@ -2335,7 +2392,9 @@ function renderCart(container) {
           <div class="cart-items">
             ${cartProducts.map(p => `
               <div class="cart-item">
-                <div class="cart-item-img" style="background:${getGradient(p)};"></div>
+                <div class="cart-item-img" style="${p.image ? '' : 'background:' + getGradient(p) + ';'}">
+                  ${p.image ? '<img src="' + p.image + '" alt="' + p.name + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.style.background=\'' + getGradient(p) + '\'">' : ''}
+                </div>
                 <div class="cart-item-info">
                   <h3>${p.name}</h3>
                   <div class="meta">${p.platform} &middot; ${p.region} &middot; ${p.genres.join(', ')}</div>
