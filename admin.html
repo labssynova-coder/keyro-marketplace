@@ -1,0 +1,1488 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keyro — Administration (Démo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========================================
+   CSS RESET & VARIABLES
+   ======================================== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0B0E14;--surface:#14171F;--card:#1A1E28;--card-hover:#222733;
+  --accent:#E89A2D;--accent-hover:#F0A840;--accent-glow:rgba(232,154,45,.12);
+  --fg:#F0F0F2;--fg-secondary:#B0B6C3;--muted:#6B7280;
+  --border:#252A36;--danger:#F87171;--success:#34D399;--info:#60A5FA;--warn:#FBBF24;
+  --radius-xl:20px;--radius-lg:14px;--radius-md:10px;--radius-sm:7px;--radius-xs:5px;
+  --font-heading:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+  --transition:180ms cubic-bezier(.4,0,.2,1);
+  --shadow-card:0 1px 3px rgba(0,0,0,.3),0 6px 16px rgba(0,0,0,.2);
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:var(--font-body);background:var(--bg);color:var(--fg);line-height:1.6;min-height:100vh}
+h1,h2,h3,h4,h5,h6{font-family:var(--font-heading);font-weight:600}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit}
+input,select,textarea{font-family:inherit}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+
+/* ========================================
+   DEMO BANNER
+   ======================================== */
+.demo-banner{
+  background:linear-gradient(135deg,rgba(232,154,45,.15),rgba(232,154,45,.05));
+  border-bottom:1px solid var(--accent);color:var(--accent-hover);
+  font-size:.8rem;font-weight:500;text-align:center;padding:.5rem 1rem;
+  position:sticky;top:0;z-index:100;
+}
+.demo-banner a{color:var(--accent);font-weight:600;margin-left:8px}
+.demo-banner a:hover{text-decoration:underline}
+
+/* ========================================
+   ADMIN LAYOUT
+   ======================================== */
+.admin-layout{
+  display:grid;
+  grid-template-columns:240px 1fr;
+  min-height:calc(100vh - 38px);
+}
+
+/* ========================================
+   SIDEBAR
+   ======================================== */
+.admin-sidebar{
+  background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;position:sticky;top:38px;
+  height:calc(100vh - 38px);overflow-y:auto;overflow-x:hidden;
+}
+.sidebar-logo{
+  display:flex;align-items:center;gap:10px;padding:20px 20px 24px;
+  border-bottom:1px solid var(--border);
+}
+.sidebar-logo-icon{
+  width:34px;height:34px;background:var(--accent);border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-heading);font-weight:700;font-size:18px;color:var(--bg);
+}
+.sidebar-logo-text{font-family:var(--font-heading);font-weight:700;font-size:18px;color:var(--fg)}
+.sidebar-logo-text span{color:var(--accent)}
+
+.admin-nav{flex:1;padding:12px 0;display:flex;flex-direction:column;gap:2px}
+.admin-nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 20px;
+  font-size:.875rem;color:var(--muted);cursor:pointer;transition:all .15s;
+  border-left:3px solid transparent;user-select:none;
+}
+.admin-nav-item:hover{background:var(--surface);color:var(--fg);background:var(--card)}
+.admin-nav-item.active{
+  background:var(--accent-glow);color:var(--accent);font-weight:600;
+  border-left-color:var(--accent);
+}
+.admin-nav-item svg{flex-shrink:0}
+
+.sidebar-bottom{
+  margin-top:auto;padding:16px 16px 12px;border-top:1px solid var(--border);
+}
+.sidebar-user{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sidebar-avatar{
+  width:34px;height:34px;border-radius:50%;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-heading);font-weight:700;font-size:14px;color:var(--bg);flex-shrink:0;
+}
+.sidebar-user-info{min-width:0}
+.sidebar-user-name{font-size:.813rem;font-weight:600;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user-role{font-size:.688rem;color:var(--muted)}
+
+.sidebar-logout-btn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px 12px;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--fg-secondary);font-size:.813rem;
+  font-weight:500;transition:all .15s;margin-bottom:8px;
+}
+.sidebar-logout-btn:hover{background:var(--card-hover);color:var(--fg)}
+.sidebar-back-link{
+  font-size:.813rem;color:var(--muted);display:flex;align-items:center;gap:6px;
+  transition:color .15s;
+}
+.sidebar-back-link:hover{color:var(--accent)}
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+.admin-main{overflow-y:auto;padding:28px 32px 48px}
+.admin-section{display:none}
+.admin-section.active{display:block}
+
+.section-header{margin-bottom:24px}
+.section-title{font-family:var(--font-heading);font-size:1.5rem;font-weight:700;color:var(--fg)}
+.section-subtitle{color:var(--fg-secondary);font-size:.875rem;margin-top:4px}
+
+/* ========================================
+   STAT CARDS
+   ======================================== */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:20px;transition:all .2s;
+}
+.stat-card:hover{border-color:var(--accent);box-shadow:0 0 20px var(--accent-glow)}
+.stat-card-icon{
+  width:40px;height:40px;border-radius:var(--radius-sm);display:flex;
+  align-items:center;justify-content:center;margin-bottom:12px;
+}
+.stat-card-icon.revenue{background:rgba(232,154,45,.12);color:var(--accent)}
+.stat-card-icon.orders{background:rgba(96,165,250,.12);color:var(--info)}
+.stat-card-icon.users{background:rgba(52,211,153,.12);color:var(--success)}
+.stat-card-icon.products{background:rgba(248,113,113,.12);color:var(--danger)}
+.stat-card-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:500;margin-bottom:4px}
+.stat-card-value{font-family:var(--font-heading);font-size:1.5rem;font-weight:700;color:var(--fg)}
+
+/* ========================================
+   CHART
+   ======================================== */
+.chart-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:24px;margin-bottom:28px;
+}
+.chart-title{font-family:var(--font-heading);font-size:1rem;font-weight:600;color:var(--fg);margin-bottom:20px}
+.bar-chart{display:flex;align-items:flex-end;gap:12px;height:180px;padding-top:8px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+.bar-wrapper{flex:1;display:flex;align-items:flex-end;width:100%}
+.bar{
+  width:100%;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,var(--accent),rgba(232,154,45,.5));
+  transition:all .2s;min-height:4px;
+}
+.bar:hover{background:linear-gradient(180deg,var(--accent-hover),var(--accent));box-shadow:0 0 12px var(--accent-glow)}
+.bar-label{font-size:.688rem;color:var(--muted);white-space:nowrap}
+.bar-value{font-size:.688rem;color:var(--fg-secondary);font-weight:500}
+
+/* ========================================
+   TABLES
+   ======================================== */
+.table-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);
+  overflow:hidden;margin-bottom:28px;
+}
+.table-header{
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.table-title{font-family:var(--font-heading);font-size:1rem;font-weight:600;color:var(--fg)}
+
+.data-table{width:100%;border-collapse:collapse;font-size:.813rem}
+.data-table thead{background:var(--surface)}
+.data-table th{
+  padding:10px 16px;text-align:left;font-weight:600;color:var(--fg-secondary);
+  font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;
+}
+.data-table td{padding:12px 16px;border-top:1px solid var(--border);color:var(--fg-secondary)}
+.data-table tbody tr{transition:background .1s}
+.data-table tbody tr:hover{background:var(--card-hover)}
+
+/* ========================================
+   BADGES
+   ======================================== */
+.badge{
+  display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;
+  font-size:.75rem;font-weight:600;letter-spacing:.01em;white-space:nowrap;
+}
+.badge-green{background:rgba(52,211,153,.12);color:var(--success)}
+.badge-amber{background:rgba(251,191,36,.12);color:var(--warn)}
+.badge-blue{background:rgba(96,165,250,.12);color:var(--info)}
+.badge-red{background:rgba(248,113,113,.12);color:var(--danger)}
+.badge-purple{background:rgba(139,92,246,.12);color:#A78BFA}
+.badge-indigo{background:rgba(99,102,241,.12);color:#818CF8}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 16px;
+  border-radius:var(--radius-sm);font-size:.813rem;font-weight:500;
+  border:1px solid transparent;transition:all .15s;
+}
+.btn-primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn-secondary{background:var(--card);color:var(--fg-secondary);border-color:var(--border)}
+.btn-secondary:hover{background:var(--card-hover);color:var(--fg)}
+.btn-danger-outline{background:transparent;color:var(--danger);border-color:rgba(248,113,113,.3)}
+.btn-danger-outline:hover{background:rgba(248,113,113,.08)}
+.btn-sm{padding:5px 12px;font-size:.75rem}
+.btn-xs{padding:3px 8px;font-size:.688rem}
+
+.action-btn{
+  background:none;border:none;color:var(--accent);font-size:.813rem;
+  padding:2px 6px;cursor:pointer;transition:color .15s;font-weight:500;
+}
+.action-btn:hover{color:var(--accent-hover)}
+.action-btn.danger{color:var(--danger)}
+.action-btn.danger:hover{color:#fca5a5}
+.action-divider{color:var(--border);margin:0 4px;user-select:none}
+
+/* ========================================
+   FILTER BAR
+   ======================================== */
+.filter-bar{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+}
+.filter-bar select,.filter-bar input[type="text"]{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);
+  padding:7px 12px;color:var(--fg);font-size:.813rem;outline:none;transition:border-color .15s;
+}
+.filter-bar select:focus,.filter-bar input[type="text"]:focus{border-color:var(--accent)}
+.filter-bar label{display:flex;align-items:center;gap:6px;font-size:.813rem;color:var(--fg-secondary);cursor:pointer}
+.filter-bar input[type="checkbox"]{accent-color:var(--accent);width:15px;height:15px}
+
+/* ========================================
+   FORMS
+   ======================================== */
+.form-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:24px;margin-bottom:28px;
+}
+.form-title{font-family:var(--font-heading);font-size:1rem;font-weight:600;color:var(--fg);margin-bottom:16px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full-width{grid-column:1/-1}
+.form-label{font-size:.813rem;font-weight:500;color:var(--fg-secondary)}
+.form-input,.form-select,.form-textarea{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);
+  padding:9px 14px;color:var(--fg);font-size:.875rem;outline:none;transition:border-color .15s;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--muted)}
+.form-textarea{resize:vertical;min-height:80px}
+.form-select{cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
+}
+
+/* Radio pills */
+.radio-pills{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.radio-pill{
+  padding:8px 18px;font-size:.813rem;font-weight:500;color:var(--muted);
+  cursor:pointer;transition:all .15s;background:var(--surface);
+  border:none;flex:1;text-align:center;
+}
+.radio-pill:hover{color:var(--fg-secondary)}
+.radio-pill.active{background:var(--accent);color:var(--bg);font-weight:600}
+
+/* Checkbox list */
+.checkbox-list{display:flex;flex-direction:column;gap:10px}
+.checkbox-item{display:flex;align-items:center;gap:8px;font-size:.875rem;color:var(--fg-secondary)}
+.checkbox-item input[type="checkbox"]{accent-color:var(--accent);width:16px;height:16px}
+.checkbox-item .product-name{font-weight:500;color:var(--fg)}
+.checkbox-item .product-meta{font-size:.75rem;color:var(--muted)}
+
+/* ========================================
+   TABS
+   ======================================== */
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab-btn{
+  padding:10px 20px;font-size:.875rem;font-weight:500;color:var(--muted);
+  cursor:pointer;border:none;border-bottom:2px solid transparent;
+  background:none;transition:all .15s;margin-bottom:-1px;
+}
+.tab-btn:hover{color:var(--fg-secondary)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* ========================================
+   STATUS DROPDOWN IN TABLE
+   ======================================== */
+.status-select{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);
+  padding:4px 8px;font-size:.75rem;color:var(--fg);cursor:pointer;outline:none;
+}
+.status-select:focus{border-color:var(--accent)}
+
+/* ========================================
+   STAR RATING
+   ======================================== */
+.stars{color:var(--accent);font-size:.875rem;letter-spacing:1px}
+
+/* ========================================
+   TOAST
+   ======================================== */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:500;
+  padding:12px 20px;border-radius:var(--radius-sm);font-size:.875rem;
+  color:#fff;background:var(--accent);opacity:0;transition:opacity .3s;
+  pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.4);
+  display:flex;align-items:center;gap:8px;
+}
+.toast.show{opacity:1}
+
+/* ========================================
+   ACTIVE TOGGLE BTN
+   ======================================== */
+.toggle-btn{
+  padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;
+  border:none;cursor:pointer;transition:all .15s;
+}
+.toggle-btn.active{background:rgba(52,211,153,.12);color:var(--success)}
+.toggle-btn.inactive{background:rgba(248,113,113,.12);color:var(--danger)}
+.toggle-btn:hover{opacity:.85}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media(max-width:1024px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:768px){
+  .admin-layout{grid-template-columns:1fr}
+  .admin-sidebar{
+    position:sticky;top:38px;height:auto;flex-direction:row;
+    overflow-x:auto;overflow-y:hidden;border-right:none;border-bottom:1px solid var(--border);
+  }
+  .sidebar-logo{display:none}
+  .sidebar-bottom{display:none}
+  .admin-nav{flex-direction:row;padding:0;gap:0;min-width:max-content}
+  .admin-nav-item{
+    border-left:none;border-bottom:2px solid transparent;padding:10px 16px;
+    white-space:nowrap;font-size:.813rem;
+  }
+  .admin-nav-item.active{border-left-color:transparent;border-bottom-color:var(--accent)}
+  .admin-main{padding:20px 16px 40px}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  .filter-bar{flex-direction:column;align-items:stretch}
+  .table-card{overflow-x:auto}
+  .data-table{min-width:700px}
+  .bar-chart{height:140px;gap:8px}
+}
+@media(max-width:480px){
+  .stat-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================
+     DEMO BANNER
+     ============================ -->
+<div class="demo-banner">&#9888;&#65039; Démo — Données fictives, aucune action n'est exécutée. <a href="index.html">&#8592; Retour au site</a></div>
+
+<!-- ============================
+     ADMIN LAYOUT
+     ============================ -->
+<div class="admin-layout">
+
+  <!-- ============================
+       SIDEBAR
+       ============================ -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">K</div>
+      <div class="sidebar-logo-text"><span>Key</span>ro</div>
+    </div>
+
+    <nav class="admin-nav">
+      <div class="admin-nav-item active" data-section="dashboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Tableau de bord
+      </div>
+      <div class="admin-nav-item" data-section="products">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Produits
+      </div>
+      <div class="admin-nav-item" data-section="keys">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        Clés
+      </div>
+      <div class="admin-nav-item" data-section="home">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Accueil
+      </div>
+      <div class="admin-nav-item" data-section="categories">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        Catégories
+      </div>
+      <div class="admin-nav-item" data-section="orders">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Commandes
+      </div>
+      <div class="admin-nav-item" data-section="users">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Utilisateurs
+      </div>
+      <div class="admin-nav-item" data-section="reviews">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Avis
+      </div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">D</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Demo User</div>
+          <div class="sidebar-user-role">Administrateur</div>
+        </div>
+      </div>
+      <button class="sidebar-logout-btn" onclick="showToast()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Déconnexion
+      </button>
+      <a href="index.html" class="sidebar-back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Retour au site
+      </a>
+    </div>
+  </aside>
+
+  <!-- ============================
+       MAIN CONTENT
+       ============================ -->
+  <main class="admin-main">
+
+    <!-- ========================
+         DASHBOARD SECTION
+         ======================== -->
+    <section class="admin-section active" data-section="dashboard">
+      <div class="section-header">
+        <h1 class="section-title">Tableau de bord</h1>
+        <p class="section-subtitle">Vue d'ensemble de l'activité Keyro</p>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-card-icon revenue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="stat-card-label">Revenu total</div>
+          <div class="stat-card-value">12 450,00 &euro;</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon orders">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div class="stat-card-label">Commandes</div>
+          <div class="stat-card-value">87</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon users">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="stat-card-label">Utilisateurs</div>
+          <div class="stat-card-value">234</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon products">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </div>
+          <div class="stat-card-label">Produits</div>
+          <div class="stat-card-value">42</div>
+        </div>
+      </div>
+
+      <!-- Revenue Chart -->
+      <div class="chart-card">
+        <div class="chart-title">Revenu par mois</div>
+        <div class="bar-chart">
+          <div class="bar-col">
+            <div class="bar-value">1 200 &euro;</div>
+            <div class="bar-wrapper"><div class="bar" style="height:42.8%"></div></div>
+            <div class="bar-label">Jan</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-value">1 800 &euro;</div>
+            <div class="bar-wrapper"><div class="bar" style="height:64.3%"></div></div>
+            <div class="bar-label">Fév</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-value">2 100 &euro;</div>
+            <div class="bar-wrapper"><div class="bar" style="height:75%"></div></div>
+            <div class="bar-label">Mar</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-value">2 450 &euro;</div>
+            <div class="bar-wrapper"><div class="bar" style="height:87.5%"></div></div>
+            <div class="bar-label">Avr</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-value">2 800 &euro;</div>
+            <div class="bar-wrapper"><div class="bar" style="height:100%"></div></div>
+            <div class="bar-label">Mai</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-value">2 100 &euro;</div>
+            <div class="bar-wrapper"><div class="bar" style="height:75%"></div></div>
+            <div class="bar-label">Jun</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Commandes récentes</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>N&deg; commande</th>
+              <th>Utilisateur</th>
+              <th>Total</th>
+              <th>Statut</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">KYR-2024-001</td>
+              <td>demo@keyro.test</td>
+              <td style="color:var(--fg);font-weight:500">29,99 &euro;</td>
+              <td><span class="badge badge-green">Livré</span></td>
+              <td>09/06/2024</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">KYR-2024-002</td>
+              <td>joueur@email.fr</td>
+              <td style="color:var(--fg);font-weight:500">49,99 &euro;</td>
+              <td><span class="badge badge-green">Payé</span></td>
+              <td>08/06/2024</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">KYR-2024-003</td>
+              <td>marie@test.com</td>
+              <td style="color:var(--fg);font-weight:500">14,99 &euro;</td>
+              <td><span class="badge badge-amber">En attente</span></td>
+              <td>07/06/2024</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">KYR-2024-004</td>
+              <td>lucas@mail.fr</td>
+              <td style="color:var(--fg);font-weight:500">39,99 &euro;</td>
+              <td><span class="badge badge-blue">En cours</span></td>
+              <td>06/06/2024</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">KYR-2024-005</td>
+              <td>clara@demo.fr</td>
+              <td style="color:var(--fg);font-weight:500">59,99 &euro;</td>
+              <td><span class="badge badge-red">Annulé</span></td>
+              <td>05/06/2024</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Top Products -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Produits les plus vendus</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Produit</th>
+              <th>Quantité vendue</th>
+              <th>Revenu</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Elden Ring</td>
+              <td>24</td>
+              <td style="color:var(--fg);font-weight:500">1 199,76 &euro;</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Cyberpunk 2077</td>
+              <td>18</td>
+              <td style="color:var(--fg);font-weight:500">719,82 &euro;</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Red Dead Redemption 2</td>
+              <td>15</td>
+              <td style="color:var(--fg);font-weight:500">599,85 &euro;</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================
+         PRODUCTS SECTION
+         ======================== -->
+    <section class="admin-section" data-section="products">
+      <div class="section-header">
+        <h1 class="section-title">Produits</h1>
+        <p class="section-subtitle">Gestion du catalogue de jeux</p>
+      </div>
+
+      <div class="table-card">
+        <div class="filter-bar">
+          <select class="form-select" style="width:auto" onclick="showToast()">
+            <option>Toutes les plateformes</option>
+            <option>Steam</option>
+            <option>Epic Games</option>
+            <option>PlayStation</option>
+            <option>Xbox</option>
+          </select>
+          <label>
+            <input type="checkbox" checked onclick="showToast()">
+            Actifs seulement
+          </label>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn btn-primary btn-sm" onclick="showToast()">+ Ajouter</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              Ajouter depuis Steam
+            </button>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Plateforme</th>
+              <th>Prix</th>
+              <th>Réduction</th>
+              <th>Stock</th>
+              <th>Actif</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Elden Ring</td>
+              <td><span class="badge badge-indigo">Steam</span></td>
+              <td style="color:var(--fg);font-weight:500">49,99 &euro;</td>
+              <td style="color:var(--warn)">-17%</td>
+              <td>12</td>
+              <td><span class="toggle-btn active" onclick="showToast()">Actif</span></td>
+              <td>
+                <button class="action-btn" onclick="showToast()">Modifier</button>
+                <span class="action-divider">|</span>
+                <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+              </td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Cyberpunk 2077</td>
+              <td><span class="badge badge-indigo">Steam</span></td>
+              <td style="color:var(--fg);font-weight:500">39,99 &euro;</td>
+              <td style="color:var(--warn)">-20%</td>
+              <td>8</td>
+              <td><span class="toggle-btn active" onclick="showToast()">Actif</span></td>
+              <td>
+                <button class="action-btn" onclick="showToast()">Modifier</button>
+                <span class="action-divider">|</span>
+                <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+              </td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Red Dead Redemption 2</td>
+              <td><span class="badge badge-indigo">Steam</span></td>
+              <td style="color:var(--fg);font-weight:500">39,99 &euro;</td>
+              <td style="color:var(--warn)">-20%</td>
+              <td>5</td>
+              <td><span class="toggle-btn active" onclick="showToast()">Actif</span></td>
+              <td>
+                <button class="action-btn" onclick="showToast()">Modifier</button>
+                <span class="action-divider">|</span>
+                <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+              </td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Forza Horizon 5</td>
+              <td><span class="badge badge-green">Xbox</span></td>
+              <td style="color:var(--fg);font-weight:500">34,99 &euro;</td>
+              <td style="color:var(--warn)">-30%</td>
+              <td style="color:var(--danger);font-weight:500">0</td>
+              <td><span class="toggle-btn inactive" onclick="showToast()">Inactif</span></td>
+              <td>
+                <button class="action-btn" onclick="showToast()">Modifier</button>
+                <span class="action-divider">|</span>
+                <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+              </td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">God of War</td>
+              <td><span class="badge badge-blue">PlayStation</span></td>
+              <td style="color:var(--fg);font-weight:500">29,99 &euro;</td>
+              <td style="color:var(--warn)">-40%</td>
+              <td>15</td>
+              <td><span class="toggle-btn active" onclick="showToast()">Actif</span></td>
+              <td>
+                <button class="action-btn" onclick="showToast()">Modifier</button>
+                <span class="action-divider">|</span>
+                <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+              </td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Baldur's Gate 3</td>
+              <td><span class="badge badge-indigo">Steam</span></td>
+              <td style="color:var(--fg);font-weight:500">49,99 &euro;</td>
+              <td style="color:var(--muted)">0%</td>
+              <td>20</td>
+              <td><span class="toggle-btn active" onclick="showToast()">Actif</span></td>
+              <td>
+                <button class="action-btn" onclick="showToast()">Modifier</button>
+                <span class="action-divider">|</span>
+                <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================
+         KEYS SECTION
+         ======================== -->
+    <section class="admin-section" data-section="keys">
+      <div class="section-header">
+        <h1 class="section-title">Clés</h1>
+        <p class="section-subtitle">Gestion des clés et comptes de jeux</p>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Inventaire des clés</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Produit</th>
+              <th>Type</th>
+              <th>Disponibles</th>
+              <th>Assignées</th>
+              <th>Total</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Elden Ring</td>
+              <td><span class="badge badge-purple">Clé</span></td>
+              <td><span class="badge badge-green">8</span></td>
+              <td><span class="badge badge-blue">4</span></td>
+              <td style="font-weight:500">12</td>
+              <td><button class="action-btn" onclick="showToast()">Gérer</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Cyberpunk 2077</td>
+              <td><span class="badge badge-purple">Clé</span></td>
+              <td><span class="badge badge-green">5</span></td>
+              <td><span class="badge badge-blue">3</span></td>
+              <td style="font-weight:500">8</td>
+              <td><button class="action-btn" onclick="showToast()">Gérer</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Red Dead Redemption 2</td>
+              <td><span class="badge badge-amber">Compte</span></td>
+              <td><span class="badge badge-green">3</span></td>
+              <td><span class="badge badge-blue">2</span></td>
+              <td style="font-weight:500">5</td>
+              <td><button class="action-btn" onclick="showToast()">Gérer</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">God of War</td>
+              <td><span class="badge badge-purple">Clé</span></td>
+              <td><span class="badge badge-green">12</span></td>
+              <td><span class="badge badge-blue">3</span></td>
+              <td style="font-weight:500">15</td>
+              <td><button class="action-btn" onclick="showToast()">Gérer</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Forza Horizon 5</td>
+              <td><span class="badge badge-amber">Compte</span></td>
+              <td><span class="badge badge-red">0</span></td>
+              <td>0</td>
+              <td style="font-weight:500">0</td>
+              <td><button class="action-btn" onclick="showToast()">Gérer</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Baldur's Gate 3</td>
+              <td><span class="badge badge-purple">Clé</span></td>
+              <td><span class="badge badge-green">18</span></td>
+              <td><span class="badge badge-blue">2</span></td>
+              <td style="font-weight:500">20</td>
+              <td><button class="action-btn" onclick="showToast()">Gérer</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================
+         HOME SECTION
+         ======================== -->
+    <section class="admin-section" data-section="home">
+      <div class="section-header">
+        <h1 class="section-title">Accueil</h1>
+        <p class="section-subtitle">Configuration du contenu de la page d'accueil</p>
+      </div>
+
+      <div class="form-card">
+        <div class="form-title">Mode du hero</div>
+        <div class="radio-pills" id="heroModePills">
+          <button class="radio-pill active" data-value="auto" onclick="selectPill(this,'heroModePills');showToast()">Automatique</button>
+          <button class="radio-pill" data-value="product" onclick="selectPill(this,'heroModePills');showToast()">Produit choisi</button>
+          <button class="radio-pill" data-value="custom" onclick="selectPill(this,'heroModePills');showToast()">Hero personnalisé</button>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-title">Paramètres du hero</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Produit mis en avant</label>
+            <select class="form-select" onclick="showToast()">
+              <option>Elden Ring</option>
+              <option>Cyberpunk 2077</option>
+              <option>Red Dead Redemption 2</option>
+              <option>God of War</option>
+              <option>Baldur's Gate 3</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Texte court</label>
+            <input type="text" class="form-input" placeholder="Ex : L'open world ultime" value="L'open world ultime">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Titre personnalisé</label>
+            <input type="text" class="form-input" placeholder="Laisser vide pour le titre du produit" value="">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Libellé du bouton</label>
+            <input type="text" class="form-input" placeholder="Acheter maintenant" value="Acheter maintenant">
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Description personnalisée</label>
+            <textarea class="form-textarea" placeholder="Laisser vide pour la description du produit"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-title">Produits mis en avant</div>
+        <div class="checkbox-list">
+          <label class="checkbox-item">
+            <input type="checkbox" checked onclick="showToast()">
+            <span>
+              <span class="product-name">Elden Ring</span>
+              <span class="product-meta"> — 49,99 &euro; (-17%)</span>
+            </span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" checked onclick="showToast()">
+            <span>
+              <span class="product-name">Cyberpunk 2077</span>
+              <span class="product-meta"> — 39,99 &euro; (-20%)</span>
+            </span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" checked onclick="showToast()">
+            <span>
+              <span class="product-name">Red Dead Redemption 2</span>
+              <span class="product-meta"> — 39,99 &euro; (-20%)</span>
+            </span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" onclick="showToast()">
+            <span>
+              <span class="product-name">Forza Horizon 5</span>
+              <span class="product-meta"> — 34,99 &euro; (-30%)</span>
+            </span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" checked onclick="showToast()">
+            <span>
+              <span class="product-name">God of War</span>
+              <span class="product-meta"> — 29,99 &euro; (-40%)</span>
+            </span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" checked onclick="showToast()">
+            <span>
+              <span class="product-name">Baldur's Gate 3</span>
+              <span class="product-meta"> — 49,99 &euro;</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <button class="btn btn-primary" onclick="showToast()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Enregistrer
+        </button>
+        <button class="btn btn-secondary" onclick="showToast()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Aperçu
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================
+         CATEGORIES SECTION
+         ======================== -->
+    <section class="admin-section" data-section="categories">
+      <div class="section-header">
+        <h1 class="section-title">Catégories</h1>
+        <p class="section-subtitle">Gestion des plateformes et genres</p>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab(this,'cat-tab')">Plateformes</button>
+        <button class="tab-btn" onclick="switchTab(this,'cat-tab')">Genres</button>
+      </div>
+
+      <!-- Plateformes Tab -->
+      <div class="tab-content active" data-tab-group="cat-tab">
+        <div class="form-card">
+          <div class="form-title">Ajouter une plateforme</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Nom</label>
+              <input type="text" class="form-input" placeholder="Ex : Nintendo">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Slug</label>
+              <input type="text" class="form-input" placeholder="Ex : nintendo">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ordre</label>
+              <input type="number" class="form-input" value="5" min="1">
+            </div>
+            <div class="form-group" style="display:flex;align-items:flex-end">
+              <button class="btn btn-primary btn-sm" onclick="showToast()">Ajouter</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Slug</th>
+                <th>Ordre</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="color:var(--fg);font-weight:500">Steam</td>
+                <td style="font-family:monospace;font-size:.813rem;color:var(--muted)">steam</td>
+                <td>1</td>
+                <td>
+                  <button class="action-btn" onclick="showToast()">Modifier</button>
+                  <span class="action-divider">|</span>
+                  <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="color:var(--fg);font-weight:500">Epic Games</td>
+                <td style="font-family:monospace;font-size:.813rem;color:var(--muted)">epic-games</td>
+                <td>2</td>
+                <td>
+                  <button class="action-btn" onclick="showToast()">Modifier</button>
+                  <span class="action-divider">|</span>
+                  <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="color:var(--fg);font-weight:500">PlayStation</td>
+                <td style="font-family:monospace;font-size:.813rem;color:var(--muted)">playstation</td>
+                <td>3</td>
+                <td>
+                  <button class="action-btn" onclick="showToast()">Modifier</button>
+                  <span class="action-divider">|</span>
+                  <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="color:var(--fg);font-weight:500">Xbox</td>
+                <td style="font-family:monospace;font-size:.813rem;color:var(--muted)">xbox</td>
+                <td>4</td>
+                <td>
+                  <button class="action-btn" onclick="showToast()">Modifier</button>
+                  <span class="action-divider">|</span>
+                  <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Genres Tab -->
+      <div class="tab-content" data-tab-group="cat-tab">
+        <div class="form-card">
+          <div class="form-title">Ajouter un genre</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Nom</label>
+              <input type="text" class="form-input" placeholder="Ex : Simulation">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Slug</label>
+              <input type="text" class="form-input" placeholder="Ex : simulation">
+            </div>
+            <div class="form-group" style="display:flex;align-items:flex-end">
+              <button class="btn btn-primary btn-sm" onclick="showToast()">Ajouter</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Slug</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="color:var(--fg);font-weight:500">Action</td>
+                <td style="font-family:monospace;font-size:.813rem;color:var(--muted)">action</td>
+                <td>
+                  <button class="action-btn" onclick="showToast()">Modifier</button>
+                  <span class="action-divider">|</span>
+                  <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="color:var(--fg);font-weight:500">RPG</td>
+                <td style="font-family:monospace;font-size:.813rem;color:var(--muted)">rpg</td>
+                <td>
+                  <button class="action-btn" onclick="showToast()">Modifier</button>
+                  <span class="action-divider">|</span>
+                  <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="color:var(--fg);font-weight:500">Aventure</td>
+                <td style="font-family:monospace;font-size:.813rem;color:var(--muted)">aventure</td>
+                <td>
+                  <button class="action-btn" onclick="showToast()">Modifier</button>
+                  <span class="action-divider">|</span>
+                  <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="color:var(--fg);font-weight:500">Sport</td>
+                <td style="font-family:monospace;font-size:.813rem;color:var(--muted)">sport</td>
+                <td>
+                  <button class="action-btn" onclick="showToast()">Modifier</button>
+                  <span class="action-divider">|</span>
+                  <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="color:var(--fg);font-weight:500">Stratégie</td>
+                <td style="font-family:monospace;font-size:.813rem;color:var(--muted)">strategie</td>
+                <td>
+                  <button class="action-btn" onclick="showToast()">Modifier</button>
+                  <span class="action-divider">|</span>
+                  <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="color:var(--fg);font-weight:500">Horreur</td>
+                <td style="font-family:monospace;font-size:.813rem;color:var(--muted)">horreur</td>
+                <td>
+                  <button class="action-btn" onclick="showToast()">Modifier</button>
+                  <span class="action-divider">|</span>
+                  <button class="action-btn danger" onclick="showToast()">Supprimer</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================
+         ORDERS SECTION
+         ======================== -->
+    <section class="admin-section" data-section="orders">
+      <div class="section-header">
+        <h1 class="section-title">Commandes</h1>
+        <p class="section-subtitle">Suivi et gestion des commandes</p>
+      </div>
+
+      <div class="table-card">
+        <div class="filter-bar">
+          <select class="form-select" style="width:auto" onclick="showToast()">
+            <option>Tous les statuts</option>
+            <option>En attente</option>
+            <option>En cours</option>
+            <option>Payé</option>
+            <option>Livré</option>
+            <option>Annulé</option>
+            <option>Remboursé</option>
+          </select>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>N&deg; commande</th>
+              <th>Utilisateur</th>
+              <th>Réf. paiement</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Statut</th>
+              <th>Articles</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">KYR-2024-001</td>
+              <td>demo@keyro.test</td>
+              <td style="font-family:monospace;font-size:.75rem;color:var(--muted)">PAY-DEMO-001</td>
+              <td>09/06/2024</td>
+              <td style="color:var(--fg);font-weight:500">29,99 &euro;</td>
+              <td>
+                <select class="status-select" onchange="showToast()">
+                  <option value="pending">En attente</option>
+                  <option value="processing">En cours</option>
+                  <option value="paid">Payé</option>
+                  <option value="delivered" selected>Livré</option>
+                  <option value="cancelled">Annulé</option>
+                  <option value="refunded">Remboursé</option>
+                </select>
+              </td>
+              <td style="text-align:center">1</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">KYR-2024-002</td>
+              <td>joueur@email.fr</td>
+              <td style="font-family:monospace;font-size:.75rem;color:var(--muted)">PAY-DEMO-002</td>
+              <td>08/06/2024</td>
+              <td style="color:var(--fg);font-weight:500">49,99 &euro;</td>
+              <td>
+                <select class="status-select" onchange="showToast()">
+                  <option value="pending">En attente</option>
+                  <option value="processing">En cours</option>
+                  <option value="paid" selected>Payé</option>
+                  <option value="delivered">Livré</option>
+                  <option value="cancelled">Annulé</option>
+                  <option value="refunded">Remboursé</option>
+                </select>
+              </td>
+              <td style="text-align:center">2</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">KYR-2024-003</td>
+              <td>marie@test.com</td>
+              <td style="font-family:monospace;font-size:.75rem;color:var(--muted)">-</td>
+              <td>07/06/2024</td>
+              <td style="color:var(--fg);font-weight:500">14,99 &euro;</td>
+              <td>
+                <select class="status-select" onchange="showToast()">
+                  <option value="pending" selected>En attente</option>
+                  <option value="processing">En cours</option>
+                  <option value="paid">Payé</option>
+                  <option value="delivered">Livré</option>
+                  <option value="cancelled">Annulé</option>
+                  <option value="refunded">Remboursé</option>
+                </select>
+              </td>
+              <td style="text-align:center">1</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">KYR-2024-004</td>
+              <td>lucas@mail.fr</td>
+              <td style="font-family:monospace;font-size:.75rem;color:var(--muted)">PAY-DEMO-004</td>
+              <td>06/06/2024</td>
+              <td style="color:var(--fg);font-weight:500">39,99 &euro;</td>
+              <td>
+                <select class="status-select" onchange="showToast()">
+                  <option value="pending">En attente</option>
+                  <option value="processing" selected>En cours</option>
+                  <option value="paid">Payé</option>
+                  <option value="delivered">Livré</option>
+                  <option value="cancelled">Annulé</option>
+                  <option value="refunded">Remboursé</option>
+                </select>
+              </td>
+              <td style="text-align:center">1</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">KYR-2024-005</td>
+              <td>clara@demo.fr</td>
+              <td style="font-family:monospace;font-size:.75rem;color:var(--muted)">PAY-DEMO-005</td>
+              <td>05/06/2024</td>
+              <td style="color:var(--fg);font-weight:500">59,99 &euro;</td>
+              <td>
+                <select class="status-select" onchange="showToast()">
+                  <option value="pending">En attente</option>
+                  <option value="processing">En cours</option>
+                  <option value="paid">Payé</option>
+                  <option value="delivered">Livré</option>
+                  <option value="cancelled" selected>Annulé</option>
+                  <option value="refunded">Remboursé</option>
+                </select>
+              </td>
+              <td style="text-align:center">3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================
+         USERS SECTION
+         ======================== -->
+    <section class="admin-section" data-section="users">
+      <div class="section-header">
+        <h1 class="section-title">Utilisateurs</h1>
+        <p class="section-subtitle">Gestion des comptes utilisateurs</p>
+      </div>
+
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Rôle</th>
+              <th>Actif</th>
+              <th>Inscription</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Demo User</td>
+              <td>demo@keyro.test</td>
+              <td>
+                <select class="status-select" onchange="showToast()">
+                  <option value="admin" selected>admin</option>
+                  <option value="customer">customer</option>
+                </select>
+              </td>
+              <td><button class="toggle-btn active" onclick="showToast()">Désactiver</button></td>
+              <td>01/01/2024</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Jean Dupont</td>
+              <td>jean@email.fr</td>
+              <td>
+                <select class="status-select" onchange="showToast()">
+                  <option value="admin">admin</option>
+                  <option value="customer" selected>customer</option>
+                </select>
+              </td>
+              <td><button class="toggle-btn active" onclick="showToast()">Désactiver</button></td>
+              <td>15/02/2024</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Marie Curie</td>
+              <td>marie@test.com</td>
+              <td>
+                <select class="status-select" onchange="showToast()">
+                  <option value="admin">admin</option>
+                  <option value="customer" selected>customer</option>
+                </select>
+              </td>
+              <td><button class="toggle-btn inactive" onclick="showToast()">Activer</button></td>
+              <td>22/03/2024</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Lucas Martin</td>
+              <td>lucas@mail.fr</td>
+              <td>
+                <select class="status-select" onchange="showToast()">
+                  <option value="admin">admin</option>
+                  <option value="customer" selected>customer</option>
+                </select>
+              </td>
+              <td><button class="toggle-btn active" onclick="showToast()">Désactiver</button></td>
+              <td>10/04/2024</td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Clara Dupuis</td>
+              <td>clara@demo.fr</td>
+              <td>
+                <select class="status-select" onchange="showToast()">
+                  <option value="admin">admin</option>
+                  <option value="customer" selected>customer</option>
+                </select>
+              </td>
+              <td><button class="toggle-btn active" onclick="showToast()">Désactiver</button></td>
+              <td>05/05/2024</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================
+         REVIEWS SECTION
+         ======================== -->
+    <section class="admin-section" data-section="reviews">
+      <div class="section-header">
+        <h1 class="section-title">Avis</h1>
+        <p class="section-subtitle">Modération des avis clients</p>
+      </div>
+
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Produit</th>
+              <th>Auteur</th>
+              <th>Note</th>
+              <th>Texte</th>
+              <th>Approuvé</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Elden Ring</td>
+              <td>Demo User</td>
+              <td><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span></td>
+              <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Magnifique jeu, l'open world est incroyable...</td>
+              <td><button class="toggle-btn active" onclick="showToast()">Approuvé</button></td>
+              <td>09/06/2024</td>
+              <td><button class="action-btn danger" onclick="showToast()">Supprimer</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Cyberpunk 2077</td>
+              <td>Jean Dupont</td>
+              <td><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span></td>
+              <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Excellent depuis la mise à jour 2.0 !</td>
+              <td><button class="toggle-btn active" onclick="showToast()">Approuvé</button></td>
+              <td>08/06/2024</td>
+              <td><button class="action-btn danger" onclick="showToast()">Supprimer</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">God of War</td>
+              <td>Marie Curie</td>
+              <td><span class="stars">&#9733;&#9733;&#9733;&#9734;&#9734;</span></td>
+              <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Bon jeu mais un peu court...</td>
+              <td><button class="toggle-btn inactive" onclick="showToast()">En attente</button></td>
+              <td>07/06/2024</td>
+              <td><button class="action-btn danger" onclick="showToast()">Supprimer</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Red Dead Redemption 2</td>
+              <td>Lucas Martin</td>
+              <td><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span></td>
+              <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Chef-d'œuvre visuel, l'histoire est captivante...</td>
+              <td><button class="toggle-btn inactive" onclick="showToast()">En attente</button></td>
+              <td>06/06/2024</td>
+              <td><button class="action-btn danger" onclick="showToast()">Supprimer</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--fg);font-weight:500">Baldur's Gate 3</td>
+              <td>Clara Dupuis</td>
+              <td><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span></td>
+              <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Le meilleur RPG de l'année, sans hésiter !</td>
+              <td><button class="toggle-btn active" onclick="showToast()">Approuvé</button></td>
+              <td>05/06/2024</td>
+              <td><button class="action-btn danger" onclick="showToast()">Supprimer</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============================
+     TOAST
+     ============================ -->
+<div class="toast" id="toast">&#9888;&#65039; Action désactivée en mode démo</div>
+
+<!-- ============================
+     JAVASCRIPT
+     ============================ -->
+<script>
+(function() {
+  'use strict';
+
+  // ---- Sidebar Navigation ----
+  var navItems = document.querySelectorAll('.admin-nav-item[data-section]');
+  var sections = document.querySelectorAll('.admin-section[data-section]');
+
+  navItems.forEach(function(item) {
+    item.addEventListener('click', function() {
+      var sectionId = this.getAttribute('data-section');
+
+      // Update active nav item
+      navItems.forEach(function(n) { n.classList.remove('active'); });
+      this.classList.add('active');
+
+      // Show corresponding section, hide others
+      sections.forEach(function(s) {
+        if (s.getAttribute('data-section') === sectionId) {
+          s.classList.add('active');
+        } else {
+          s.classList.remove('active');
+        }
+      });
+
+      // Scroll main to top
+      var mainEl = document.querySelector('.admin-main');
+      if (mainEl) mainEl.scrollTop = 0;
+    });
+  });
+
+  // ---- Toast Notification ----
+  var toastTimer = null;
+  window.showToast = function() {
+    var toast = document.getElementById('toast');
+    if (!toast) return;
+    if (toastTimer) clearTimeout(toastTimer);
+    toast.classList.add('show');
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('show');
+    }, 2500);
+  };
+
+  // ---- Radio Pills ----
+  window.selectPill = function(el, groupId) {
+    var group = document.getElementById(groupId);
+    if (!group) return;
+    var pills = group.querySelectorAll('.radio-pill');
+    pills.forEach(function(p) { p.classList.remove('active'); });
+    el.classList.add('active');
+  };
+
+  // ---- Tab Switching ----
+  window.switchTab = function(btn, tabGroup) {
+    // Update tab buttons
+    var tabBar = btn.parentElement;
+    var tabBtns = tabBar.querySelectorAll('.tab-btn');
+    tabBtns.forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+
+    // Find index of clicked tab
+    var idx = Array.prototype.indexOf.call(tabBtns, btn);
+
+    // Toggle tab contents
+    var contents = document.querySelectorAll('.tab-content[data-tab-group="' + tabGroup + '"]');
+    contents.forEach(function(c, i) {
+      if (i === idx) {
+        c.classList.add('active');
+      } else {
+        c.classList.remove('active');
+      }
+    });
+  };
+
+})();
+</script>
+</body>
+</html>
