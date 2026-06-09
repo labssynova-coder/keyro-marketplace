@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Environment variables (contains secrets)
+.env
+
+# Product images (user-uploaded content)
+public/img/products/*.jpg
+public/img/products/*.png
+public/img/products/*.webp
+!public/img/products/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build artifacts
+dist/
+
+# npm cache
+.npm-cache/
+
+# Playwright MCP
+.playwright-mcp/
+
+# Temp files
+%TEMP%*
+
+# Duplicate/backup files
+Keyro.html
+myslq/

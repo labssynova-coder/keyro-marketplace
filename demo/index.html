@@ -1,0 +1,2573 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keyro — Clés de jeux numériques au meilleur prix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========================================
+   CSS RESET & VARIABLES
+   ======================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0B0E14;
+  --surface: #14171F;
+  --card: #1A1E28;
+  --card-hover: #222733;
+  --accent: #E89A2D;
+  --accent-hover: #F0A840;
+  --accent-dim: rgba(232,154,45,0.15);
+  --fg: #F0F0F2;
+  --fg-muted: #8B8D97;
+  --fg-dim: #5A5D68;
+  --border: #2A2D38;
+  --danger: #E85454;
+  --success: #34D399;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --header-h: 64px;
+  --demo-banner-h: 36px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; }
+img { max-width: 100%; display: block; }
+input { font-family: inherit; }
+
+/* ========================================
+   DEMO BANNER
+   ======================================== */
+.demo-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--demo-banner-h);
+  background: var(--accent);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 1000;
+  letter-spacing: 0.3px;
+}
+
+/* ========================================
+   HEADER / NAVBAR
+   ======================================== */
+.header {
+  position: fixed;
+  top: var(--demo-banner-h);
+  left: 0;
+  right: 0;
+  height: var(--header-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+}
+
+.header-inner {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.logo {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--fg);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.logo span { color: var(--accent); }
+
+.nav-links {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.nav-links a {
+  padding: 8px 14px;
+  border-radius: var(--radius-xs);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--fg);
+  background: var(--card);
+}
+
+.search-bar {
+  flex: 1;
+  max-width: 420px;
+  position: relative;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px 16px 10px 42px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--fg);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-bar input::placeholder { color: var(--fg-dim); }
+.search-bar input:focus { border-color: var(--accent); }
+
+.search-bar svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--fg-dim);
+}
+
+.search-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  max-height: 360px;
+  overflow-y: auto;
+  z-index: 100;
+  display: none;
+  box-shadow: var(--shadow);
+}
+
+.search-results.open { display: block; }
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.search-result-item:hover { background: var(--card-hover); }
+
+.search-result-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.search-result-info { flex: 1; }
+.search-result-name { font-size: 14px; font-weight: 500; }
+.search-result-meta { font-size: 12px; color: var(--fg-muted); }
+.search-result-price { font-size: 14px; font-weight: 600; color: var(--accent); }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cart-btn, .auth-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.cart-btn:hover, .auth-btn:hover {
+  background: var(--card);
+  border-color: var(--fg-dim);
+}
+
+.cart-btn .badge {
+  background: var(--accent);
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.auth-btn.user-btn {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.auth-btn.user-btn:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--fg);
+  padding: 8px;
+}
+
+/* ========================================
+   MAIN LAYOUT
+   ======================================== */
+.main {
+  margin-top: calc(var(--demo-banner-h) + var(--header-h));
+  min-height: calc(100vh - var(--demo-banner-h) - var(--header-h));
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+.hero {
+  padding: 48px 0 32px;
+}
+
+.hero-banner {
+  background: linear-gradient(135deg, var(--surface) 0%, #1f1a10 50%, var(--surface) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 64px 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 60%;
+  height: 200%;
+  background: radial-gradient(ellipse, rgba(232,154,45,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  max-width: 600px;
+}
+
+.hero h1 .highlight { color: var(--accent); }
+
+.hero p {
+  font-size: 16px;
+  color: var(--fg-muted);
+  max-width: 480px;
+  margin-bottom: 28px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-xs);
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover { border-color: var(--fg-dim); background: var(--card); }
+
+/* ========================================
+   CATEGORY BAR
+   ======================================== */
+.category-bar {
+  padding: 24px 0;
+}
+
+.category-bar h2 {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.category-pills {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+
+.category-pills::-webkit-scrollbar { display: none; }
+
+.category-pill {
+  flex-shrink: 0;
+  padding: 8px 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  color: var(--fg-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.category-pill:hover { border-color: var(--fg-dim); color: var(--fg); }
+
+.category-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+  font-weight: 600;
+}
+
+/* ========================================
+   PRODUCT GRID
+   ======================================== */
+.section {
+  padding: 32px 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-header h2 {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.section-header a {
+  font-size: 14px;
+  color: var(--accent);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.section-header a:hover { color: var(--accent-hover); }
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.product-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.product-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+.product-card-img {
+  width: 100%;
+  aspect-ratio: 16/10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card-img .platform-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.product-card-img .discount-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.product-card-img .game-title-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 12px 10px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.product-card-body {
+  padding: 12px 14px 14px;
+}
+
+.product-card-genre {
+  font-size: 12px;
+  color: var(--fg-dim);
+  margin-bottom: 4px;
+}
+
+.product-card-region {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-bottom: 10px;
+}
+
+.product-card-pricing {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.product-card-pricing .original-price {
+  font-size: 13px;
+  color: var(--fg-dim);
+  text-decoration: line-through;
+}
+
+.product-card-pricing .sale-price {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.product-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn-add-cart {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-add-cart:hover { background: var(--accent-hover); }
+
+.btn-wishlist {
+  padding: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--fg-dim);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-wishlist:hover { border-color: var(--danger); color: var(--danger); }
+.btn-wishlist.wishlisted { border-color: var(--danger); color: var(--danger); }
+
+/* ========================================
+   PRODUCT DETAIL PAGE
+   ======================================== */
+.product-detail {
+  padding: 32px 0 64px;
+}
+
+.pd-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--fg-muted);
+  margin-bottom: 24px;
+  transition: color 0.2s;
+}
+
+.pd-back:hover { color: var(--fg); }
+
+.pd-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+}
+
+.pd-image {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.pd-image .game-title-large {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 48px 24px 24px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.pd-info h1 {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.pd-meta {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.pd-meta-tag {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+.pd-description {
+  color: var(--fg-muted);
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.pd-sysreqs {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.pd-sysreqs h3 {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.pd-sysreqs ul {
+  list-style: none;
+  font-size: 14px;
+  color: var(--fg-muted);
+}
+
+.pd-sysreqs li {
+  padding: 4px 0;
+  display: flex;
+  gap: 8px;
+}
+
+.pd-sysreqs li strong {
+  color: var(--fg);
+  min-width: 120px;
+}
+
+.pd-sidebar {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  height: fit-content;
+  position: sticky;
+  top: calc(var(--demo-banner-h) + var(--header-h) + 16px);
+}
+
+.pd-sidebar .platform-tag {
+  display: inline-block;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.pd-sidebar .price-block {
+  margin-bottom: 20px;
+}
+
+.pd-sidebar .original-price {
+  font-size: 16px;
+  color: var(--fg-dim);
+  text-decoration: line-through;
+}
+
+.pd-sidebar .sale-price {
+  font-family: var(--font-heading);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.pd-sidebar .discount-tag {
+  display: inline-block;
+  background: var(--danger);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.pd-sidebar .region-info {
+  font-size: 13px;
+  color: var(--fg-muted);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pd-sidebar .btn-add-cart-lg {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 10px;
+}
+
+.pd-sidebar .btn-add-cart-lg:hover { background: var(--accent-hover); }
+
+.pd-sidebar .btn-wishlist-lg {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--fg-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 20px;
+}
+
+.pd-sidebar .btn-wishlist-lg:hover { border-color: var(--fg-dim); color: var(--fg); }
+
+.pd-sidebar .delivery-info {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.pd-sidebar .delivery-info div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+}
+
+.pd-sidebar .delivery-info svg { color: var(--success); flex-shrink: 0; }
+
+/* ========================================
+   REVIEWS
+   ======================================== */
+.reviews-section {
+  padding: 32px 0 48px;
+}
+
+.reviews-section h2 {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.review-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.review-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.review-name { font-weight: 600; font-size: 14px; }
+.review-stars { color: var(--accent); font-size: 14px; }
+.review-text { font-size: 14px; color: var(--fg-muted); line-height: 1.6; }
+
+/* ========================================
+   CART PAGE
+   ======================================== */
+.cart-page {
+  padding: 32px 0 64px;
+}
+
+.cart-page h1 {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.cart-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+}
+
+.cart-items { display: flex; flex-direction: column; gap: 12px; }
+
+.cart-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.cart-item-img {
+  width: 80px;
+  height: 50px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.cart-item-info { flex: 1; }
+.cart-item-info h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.cart-item-info .meta { font-size: 13px; color: var(--fg-muted); }
+
+.cart-item-price {
+  text-align: right;
+}
+
+.cart-item-price .sale-price {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.cart-item-price .original-price {
+  font-size: 13px;
+  color: var(--fg-dim);
+  text-decoration: line-through;
+}
+
+.cart-item-remove {
+  background: none;
+  border: none;
+  color: var(--fg-dim);
+  padding: 8px;
+  transition: color 0.2s;
+}
+
+.cart-item-remove:hover { color: var(--danger); }
+
+.cart-empty {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--fg-muted);
+}
+
+.cart-empty svg { margin: 0 auto 16px; color: var(--fg-dim); }
+.cart-empty h3 { font-size: 18px; margin-bottom: 8px; color: var(--fg); }
+
+.cart-summary {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  height: fit-content;
+  position: sticky;
+  top: calc(var(--demo-banner-h) + var(--header-h) + 16px);
+}
+
+.cart-summary h3 {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.cart-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--fg-muted);
+  margin-bottom: 10px;
+}
+
+.cart-summary-total {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  margin-top: 14px;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.cart-summary-total .total-price { color: var(--accent); }
+
+.btn-checkout {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-checkout:hover { background: var(--accent-hover); }
+.btn-checkout:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ========================================
+   ACCOUNT PAGE
+   ======================================== */
+.account-page {
+  padding: 32px 0 64px;
+}
+
+.account-page h1 {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.account-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+
+.account-tab {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--fg-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.account-tab:hover { color: var(--fg); }
+.account-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.account-content { display: none; }
+.account-content.active { display: block; }
+
+.order-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 12px;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.order-id { font-family: var(--font-heading); font-weight: 600; font-size: 15px; }
+
+.order-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.order-status.delivered {
+  background: rgba(52,211,153,0.15);
+  color: var(--success);
+}
+
+.order-status.pending {
+  background: rgba(232,154,45,0.15);
+  color: var(--accent);
+}
+
+.order-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.order-product { font-size: 15px; font-weight: 500; }
+.order-price { font-weight: 600; color: var(--accent); }
+
+.order-key-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-reveal-key {
+  padding: 8px 16px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-xs);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reveal-key:hover { background: var(--accent); color: #000; }
+
+.revealed-key {
+  margin-top: 8px;
+  font-family: 'Courier New', monospace;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: var(--radius-xs);
+  font-size: 15px;
+  color: var(--success);
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-copy-key {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-copy-key:hover { border-color: var(--fg-dim); color: var(--fg); }
+
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.settings-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.settings-section h3 {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-row:last-child { border-bottom: none; }
+.settings-label { font-size: 14px; color: var(--fg-muted); }
+.settings-value { font-size: 14px; font-weight: 500; }
+
+/* ========================================
+   INFO / STATIC PAGES
+   ======================================== */
+.info-page {
+  padding: 32px 0 64px;
+}
+
+.info-page h1 {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.info-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  max-width: 800px;
+}
+
+.info-content h2 {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  margin: 24px 0 12px;
+}
+
+.info-content h2:first-child { margin-top: 0; }
+
+.info-content p {
+  font-size: 15px;
+  color: var(--fg-muted);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.info-content ul {
+  color: var(--fg-muted);
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.info-content li { margin-bottom: 6px; }
+
+/* ========================================
+   FOOTER
+   ======================================== */
+.footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 48px 0 24px;
+  margin-top: 48px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.footer-brand .logo { margin-bottom: 12px; }
+.footer-brand p { font-size: 14px; color: var(--fg-muted); line-height: 1.6; }
+
+.footer-col h4 {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+  color: var(--fg);
+}
+
+.footer-col a {
+  display: block;
+  font-size: 14px;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+  transition: color 0.2s;
+}
+
+.footer-col a:hover { color: var(--accent); }
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--fg-dim);
+}
+
+/* ========================================
+   MODAL
+   ======================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s;
+}
+
+.modal-overlay.open { opacity: 1; visibility: visible; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 440px;
+  padding: 32px;
+  transform: translateY(16px);
+  transition: transform 0.25s;
+}
+
+.modal-overlay.open .modal { transform: translateY(0); }
+
+.modal h2 {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.modal p.subtitle {
+  font-size: 14px;
+  color: var(--fg-muted);
+  margin-bottom: 24px;
+}
+
+.modal-field {
+  margin-bottom: 16px;
+}
+
+.modal-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  margin-bottom: 6px;
+}
+
+.modal-field input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--fg);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.modal-field input:focus { border-color: var(--accent); }
+
+.modal .btn-primary { width: 100%; justify-content: center; margin-top: 8px; }
+
+.modal .switch-link {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+.modal .switch-link a {
+  color: var(--accent);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.modal .switch-link a:hover { text-decoration: underline; }
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--fg-muted);
+  padding: 4px;
+  cursor: pointer;
+}
+
+/* ========================================
+   TOAST
+   ======================================== */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 20px;
+  font-size: 14px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 280px;
+  max-width: 400px;
+  animation: slideInRight 0.3s ease;
+}
+
+.toast.success { border-left: 3px solid var(--success); }
+.toast.error { border-left: 3px solid var(--danger); }
+.toast.info { border-left: 3px solid var(--accent); }
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* ========================================
+   LOGIN PROMPT (for protected pages)
+   ======================================== */
+.login-prompt {
+  text-align: center;
+  padding: 64px 24px;
+}
+
+.login-prompt svg { margin: 0 auto 16px; color: var(--fg-dim); }
+.login-prompt h2 { font-family: var(--font-heading); font-size: 22px; margin-bottom: 8px; }
+.login-prompt p { color: var(--fg-muted); margin-bottom: 24px; }
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 1024px) {
+  .pd-grid { grid-template-columns: 1fr; }
+  .pd-sidebar { position: static; }
+  .cart-layout { grid-template-columns: 1fr; }
+  .cart-summary { position: static; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .header { padding: 0 16px; }
+  .nav-links { display: none; }
+  .mobile-menu-btn { display: flex; }
+  .container { padding: 0 16px; }
+  .hero-banner { padding: 40px 24px; }
+  .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .cart-item { flex-wrap: wrap; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+
+  .mobile-nav {
+    position: fixed;
+    top: calc(var(--demo-banner-h) + var(--header-h));
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--surface);
+    z-index: 950;
+    padding: 24px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  .mobile-nav.open { display: flex; }
+
+  .mobile-nav a {
+    padding: 12px 16px;
+    font-size: 16px;
+    color: var(--fg-muted);
+    border-radius: var(--radius-xs);
+    transition: all 0.2s;
+  }
+
+  .mobile-nav a:hover { background: var(--card); color: var(--fg); }
+
+  .search-bar { max-width: 100%; }
+  .header-inner { flex-wrap: wrap; }
+}
+
+@media (max-width: 480px) {
+  .product-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .product-card-body { padding: 10px; }
+  .product-card-pricing .sale-price { font-size: 16px; }
+  .hero-banner { padding: 32px 20px; }
+  .reviews-grid { grid-template-columns: 1fr; }
+}
+
+/* Mobile nav overlay */
+.mobile-nav-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 940;
+  display: none;
+}
+
+.mobile-nav-overlay.open { display: block; }
+</style>
+</head>
+<body>
+
+<!-- Demo Banner -->
+<div class="demo-banner">
+  &#11088; Demo &mdash; Donn&eacute;es fictives &middot; Aucune transaction r&eacute;elle
+</div>
+
+<!-- Header -->
+<header class="header" id="header">
+  <div class="header-inner">
+    <a href="#/" class="logo">Keyro<span>.</span></a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#/" data-nav="home">Accueil</a>
+      <a href="#/product/1" data-nav="browse">Catalogue</a>
+      <a href="#/info/help" data-nav="help">Aide</a>
+    </nav>
+
+    <div class="search-bar" id="searchBar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Rechercher un jeu..." autocomplete="off">
+      <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <div class="header-actions">
+      <button class="cart-btn" id="cartBtn" onclick="navigate('#/cart')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span>Panier</span>
+        <span class="badge" id="cartBadge" style="display:none;">0</span>
+      </button>
+      <button class="auth-btn" id="authBtn" onclick="handleAuthClick()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="authLabel">Connexion</span>
+      </button>
+      <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileNav()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Navigation -->
+<div class="mobile-nav-overlay" id="mobileOverlay" onclick="toggleMobileNav()"></div>
+<div class="mobile-nav" id="mobileNav">
+  <a href="#/" onclick="toggleMobileNav()">Accueil</a>
+  <a href="#/product/1" onclick="toggleMobileNav()">Catalogue</a>
+  <a href="#/cart" onclick="toggleMobileNav()">Panier</a>
+  <a href="#/account" onclick="toggleMobileNav()">Mon compte</a>
+  <a href="#/info/help" onclick="toggleMobileNav()">Aide</a>
+  <a href="#/info/faq" onclick="toggleMobileNav()">FAQ</a>
+  <a href="#/info/contact" onclick="toggleMobileNav()">Contact</a>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal" id="modalContent" style="position:relative;">
+    <button class="modal-close" onclick="closeModal()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Main Content -->
+<main class="main" id="app"></main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">Keyro<span>.</span></div>
+        <p>Votre marketplace de confiance pour les cl&eacute;s de jeux num&eacute;riques. Activation instantan&eacute;e, prix comp&eacute;titifs, service client r&eacute;actif.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <a href="#/">Accueil</a>
+        <a href="#/product/1">Catalogue</a>
+        <a href="#/cart">Panier</a>
+        <a href="#/account">Mon compte</a>
+      </div>
+      <div class="footer-col">
+        <h4>Informations</h4>
+        <a href="#/info/help">Centre d'aide</a>
+        <a href="#/info/faq">FAQ</a>
+        <a href="#/info/refunds">Remboursements</a>
+        <a href="#/info/contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>L&eacute;gal</h4>
+        <a href="#/info/terms">Conditions g&eacute;n&eacute;rales</a>
+        <a href="#/info/privacy">Politique de confidentialit&eacute;</a>
+        <a href="#/info/legal">Mentions l&eacute;gales</a>
+        <a href="#/info/cookies">Cookies</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 Keyro. Tous droits r&eacute;serv&eacute;s.</span>
+      <span>Demo &mdash; Aucune transaction r&eacute;elle</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ========================================
+// MOCK DATA
+// ========================================
+const PLATFORMS = [
+  { id: 1, name: 'Steam', slug: 'steam' },
+  { id: 2, name: 'Xbox', slug: 'xbox' },
+  { id: 3, name: 'PlayStation', slug: 'playstation' },
+  { id: 4, name: 'Nintendo', slug: 'nintendo' },
+  { id: 5, name: 'Carte Cadeau', slug: 'giftcard' },
+  { id: 6, name: 'Logiciel', slug: 'software' },
+];
+
+const GENRES = ['Action', 'RPG', 'Course', 'Sport', 'Horreur', 'Aventure', 'Carte Cadeau', 'Logiciel', 'Abonnement'];
+
+const PRODUCTS = [
+  { id: 1, name: 'Cyberpunk 2077', platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 79.99, salePrice: 23.99, discount: 70, genres: ['Action', 'RPG'], slug: 'cyberpunk-2077', description: 'Plongez dans Night City, une mégalopole obsédée par le pouvoir, le glamour et les modifications corporelles. Incarnez V, un mercenaire hors-la-loi à la recherche d’un implant unique qui confère l’immortalité.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-3570K / AMD FX-8310', ram: '8 Go', gpu: 'NVIDIA GTX 970 / AMD RX 470', storage: '70 Go SSD' } },
+  { id: 2, name: 'Elden Ring', platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 59.99, salePrice: 49.99, discount: 17, genres: ['RPG'], slug: 'elden-ring', description: 'Un monde créé par Hidetaka Miyazaki et George R.R. Martin. Explorez l’Entre-Terre, un vaste monde ouvert rempli de dangers et de mystères.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-8400 / AMD Ryzen 3 3300X', ram: '12 Go', gpu: 'NVIDIA GTX 1060 6Go / AMD RX 580', storage: '60 Go' } },
+  { id: 3, name: 'GTA V', platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 29.99, salePrice: 14.99, discount: 50, genres: ['Action'], slug: 'gta-v', description: 'Le célèbre monde ouvert de Los Santos et Blaine County. Trois protagonistes, une histoire épique et un mode en ligne légendaire.', sysReqs: { os: 'Windows 8.1 64-bit', cpu: 'Intel Core 2 Quad Q6600 / AMD Phenom 9850', ram: '4 Go', gpu: 'NVIDIA GTX 660 / AMD HD 7870', storage: '72 Go' } },
+  { id: 4, name: 'Red Dead Redemption 2', platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 59.99, salePrice: 29.99, discount: 50, genres: ['Action'], slug: 'red-dead-redemption-2', description: 'L’Amérique, 1899. Arthur Morgan et la bande de Van der Linde fuient les autorités à travers l’Amérique sauvage.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-2500K / AMD FX-6300', ram: '8 Go', gpu: 'NVIDIA GTX 770 2Go / AMD RX 470', storage: '150 Go' } },
+  { id: 5, name: 'Hogwarts Legacy', platformId: 1, platform: 'Steam', region: 'EU', originalPrice: 59.99, salePrice: 39.99, discount: 33, genres: ['RPG'], slug: 'hogwarts-legacy', description: 'Vivez votre aventure à Poudlard. Explorez le château, apprenez la magie et découvrez les secrets du monde des sorciers au XIXème siècle.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-6600 / AMD Ryzen 5 1400', ram: '16 Go', gpu: 'NVIDIA GTX 960 / AMD RX 470', storage: '85 Go SSD' } },
+  { id: 6, name: 'God of War Ragnarök', platformId: 3, platform: 'PlayStation', region: 'EU', originalPrice: 69.99, salePrice: 49.99, discount: 29, genres: ['Action'], slug: 'god-of-war-ragnarok', description: 'Kratos et Atreus affrontent le destin du Ragnarök. Embarquez pour un voyage épique à travers les neuf royaumes nordiques.', sysReqs: { os: 'PlayStation 5', cpu: '-', ram: '-', gpu: '-', storage: '90 Go' } },
+  { id: 7, name: 'Starfield', platformId: 2, platform: 'Xbox', region: 'Global', originalPrice: 69.99, salePrice: 49.99, discount: 29, genres: ['RPG'], slug: 'starfield', description: 'De Bethesda Game Studios, Starfield est le premier univers original en 25 ans. Explorez l’espace et découvrez les mystères de la constellation.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-10600K / AMD Ryzen 5 3600X', ram: '16 Go', gpu: 'NVIDIA RTX 2080 / AMD RX 6800', storage: '125 Go SSD' } },
+  { id: 8, name: 'Zelda: Tears of the Kingdom', platformId: 4, platform: 'Nintendo', region: 'Europe', originalPrice: 69.99, salePrice: 59.99, discount: 14, genres: ['Aventure'], slug: 'zelda-totk', description: 'Link explore un Hyrule transformé. Des îles flottantes, de nouveaux pouvoirs et une aventure épique vous attendent.', sysReqs: { os: 'Nintendo Switch', cpu: '-', ram: '-', gpu: '-', storage: '18 Go' } },
+  { id: 9, name: 'Forza Horizon 5', platformId: 2, platform: 'Xbox', region: 'Global', originalPrice: 59.99, salePrice: 29.99, discount: 50, genres: ['Course'], slug: 'forza-horizon-5', description: 'Explorez les paysages vibrants du Mexique avec plus de 500 voitures de rêve. Courses, exploration et création en monde ouvert.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel i5-4460 / AMD Ryzen 3 1200', ram: '8 Go', gpu: 'NVIDIA GTX 970 / AMD RX 470', storage: '103 Go' } },
+  { id: 10, name: "Baldur's Gate 3", platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 59.99, salePrice: 47.99, discount: 20, genres: ['RPG'], slug: 'baldurs-gate-3', description: 'Un RPG épique de Larian Studios. Rassemblez votre compagnie et affrontez les ténèbres dans les Royaumes Oubliés.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel i5-4690 / AMD FX 8350', ram: '8 Go', gpu: 'NVIDIA GTX 970 / AMD RX 480', storage: '150 Go SSD' } },
+  { id: 11, name: 'EA SPORTS FC 25', platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 69.99, salePrice: 44.99, discount: 36, genres: ['Sport'], slug: 'ea-sports-fc-25', description: 'Le football nouvelle génération. FC 25 apporte des innovations de gameplay avec HypermotionV et des modes de jeu enrichis.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-10600K / AMD Ryzen 7 2700X', ram: '8 Go', gpu: 'NVIDIA GTX 1050 Ti / AMD RX 570', storage: '50 Go' } },
+  { id: 12, name: 'Carte Steam 50€', platformId: 5, platform: 'Carte Cadeau', region: 'EU', originalPrice: 50.00, salePrice: 47.49, discount: 5, genres: ['Carte Cadeau'], slug: 'carte-steam-50', description: 'Carte cadeau Steam d’une valeur de 50€. Idéale pour offrir ou créditer votre portefeuille Steam.', sysReqs: { os: '-', cpu: '-', ram: '-', gpu: '-', storage: '-' } },
+  { id: 13, name: 'Windows 11 Pro', platformId: 6, platform: 'Logiciel', region: 'Global', originalPrice: 259.00, salePrice: 29.99, discount: 88, genres: ['Logiciel'], slug: 'windows-11-pro', description: 'Clé de licence Windows 11 Professionnel. Activation immédiate, mise à jour depuis Windows 10 incluse.', sysReqs: { os: '-', cpu: '1 GHz dual-core 64-bit', ram: '4 Go', gpu: 'DirectX 12', storage: '64 Go' } },
+  { id: 14, name: 'PS Plus Essential 12 mois', platformId: 3, platform: 'PlayStation', region: 'EU', originalPrice: 99.99, salePrice: 74.99, discount: 25, genres: ['Abonnement'], slug: 'ps-plus-essential-12', description: 'Abonnement PlayStation Plus Essential pour 12 mois. Jeux mensuels, multijoueur en ligne et remises exclusives.', sysReqs: { os: 'PlayStation 4/5', cpu: '-', ram: '-', gpu: '-', storage: '-' } },
+  { id: 15, name: 'Resident Evil 4 Remake', platformId: 1, platform: 'Steam', region: 'Global', originalPrice: 59.99, salePrice: 29.99, discount: 50, genres: ['Horreur'], slug: 'resident-evil-4-remake', description: 'Leon S. Kennedy est de retour. Une refonte complète du classique de la survie avec des graphismes modernes et un gameplay réinventé.', sysReqs: { os: 'Windows 10 64-bit', cpu: 'Intel Core i5-7500 / AMD Ryzen 3 1200', ram: '8 Go', gpu: 'NVIDIA GTX 1050 Ti / AMD RX 560', storage: '55 Go SSD' } },
+  { id: 16, name: 'Xbox Game Pass Ultimate 3 mois', platformId: 2, platform: 'Xbox', region: 'EU', originalPrice: 44.99, salePrice: 34.99, discount: 22, genres: ['Abonnement'], slug: 'xbox-game-pass-ultimate-3', description: 'Accès Xbox Game Pass Ultimate pour 3 mois. Plus de 100 jeux sur console, PC et cloud.', sysReqs: { os: 'Xbox / Windows 10', cpu: '-', ram: '-', gpu: '-', storage: '-' } },
+];
+
+const REVIEWS = [
+  { name: 'Marc D.', stars: 5, text: 'Livraison instantanée, clé fonctionnelle. J’ai pu activer Cyberpunk 2077 en 30 secondes. Service au top !' },
+  { name: 'Sophie L.', stars: 4, text: 'Bon prix et activation rapide pour ma carte Steam. Petit bémol sur le design du site, mais efficace.' },
+  { name: 'Thomas R.', stars: 5, text: 'Acheté Elden Ring à moitié prix. Clé reçue immédiatement, tout s’est parfaitement passé. Je recommande !' },
+  { name: 'Émilie B.', stars: 5, text: 'Interface propre et professionnelle. Le processus d’achat est simple et la livraison est quasi instantanée.' },
+];
+
+const ORDERS = [
+  { id: 'KEY-2025-0847', productId: 2, date: '15/08/2025', price: 49.99, status: 'delivered', key: 'A7B2C-K9D4E-F3G8H' },
+  { id: 'KEY-2025-0812', productId: 1, date: '10/08/2025', price: 23.99, status: 'delivered', key: 'X5Y8Z-W2M3N-P7Q4R' },
+  { id: 'KEY-2025-0799', productId: 12, date: '02/08/2025', price: 47.49, status: 'pending', key: null },
+];
+
+const WISHLIST_IDS = [2, 5, 10];
+
+const INFO_PAGES = {
+  help: {
+    title: 'Centre d\'aide',
+    content: `<h2>Bienvenue dans le centre d'aide Keyro</h2>
+<p>Keyro est une plateforme d'achat et de vente de clés de jeux numériques. Nous vous proposons des clés authentiques à des prix compétitifs avec une livraison instantanée.</p>
+<h2>Comment activer ma clé ?</h2>
+<p>Pour activer votre clé, il vous suffit de vous rendre sur la plateforme concernée (Steam, PlayStation Store, etc.) et de saisir votre clé dans la section « Activer un produit ». Suivez les instructions à l'écran pour télécharger et installer votre jeu.</p>
+<h2>Délais de livraison</h2>
+<p>La majorité de nos clés sont livrées instantanément après l'achat. Certaines clés pré-commandées peuvent nécessiter un délai jusqu'à la date de sortie officielle.</p>
+<h2>Problèmes fréquents</h2>
+<ul>
+<li>Clé déjà activée : contactez notre support dans les 24h suivant l'achat.</li>
+<li>Clé invalide : vérifiez la région de votre compte avant activation.</li>
+<li>Erreur de région : certaines clés sont verrouillées par région (EU, Global, etc.).</li>
+</ul>`
+  },
+  faq: {
+    title: 'Questions fréquentes',
+    content: `<h2>Qu'est-ce qu'une clé numérique ?</h2>
+<p>Une clé numérique est un code alphanumérique qui vous permet d'activer et de télécharger un jeu sur la plateforme correspondante (Steam, PlayStation, Xbox, etc.).</p>
+<h2>Les clés sont-elles légales ?</h2>
+<p>Oui, toutes les clés vendues sur Keyro proviennent de sources légitimes et autorisées. Nous garantissons l'authenticité de chaque clé.</p>
+<h2>Comment fonctionne la garantie Keyro ?</h2>
+<p>Si votre clé ne fonctionne pas, nous vous proposons un remplacement gratuit ou un remboursement intégral sous 24h, sur présentation d'une capture d'écran de l'erreur.</p>
+<h2>Puis-je offrir une clé à quelqu'un ?</h2>
+<p>Absolument ! Vous pouvez acheter une clé et la transmettre à la personne de votre choix. Les cartes cadeau sont également disponibles.</p>
+<h2>Quels moyens de paiement acceptez-vous ?</h2>
+<p>Nous acceptons les cartes bancaires (Visa, Mastercard), PayPal, et les cryptomonnaies. Tous les paiements sont sécurisés.</p>`
+  },
+  refunds: {
+    title: 'Politique de remboursement',
+    content: `<h2>Politique de remboursement Keyro</h2>
+<p>Keyro propose une garantie satisfait ou remboursé sous certaines conditions. Voici les détails de notre politique.</p>
+<h2>Conditions d'éligibilité</h2>
+<ul>
+<li>La demande doit être effectuée dans les 14 jours suivant l'achat.</li>
+<li>La clé ne doit pas avoir été activée ou révélée.</li>
+<li>Le produit ne doit pas avoir été consommé ou téléchargé.</li>
+</ul>
+<h2>Processus de remboursement</h2>
+<p>Pour demander un remboursement, contactez notre support via la page Contact en indiquant votre numéro de commande et la raison de votre demande. Le remboursement sera effectué sur votre moyen de paiement initial sous 5 à 10 jours ouvrés.</p>
+<h2>Exceptions</h2>
+<p>Les cartes cadeaux et abonnements ne sont pas remboursables une fois la clé révélée. Les pré-commandes sont remboursables jusqu'à 48h avant la date de sortie.</p>`
+  },
+  contact: {
+    title: 'Contactez-nous',
+    content: `<h2>Notre support est là pour vous</h2>
+<p>L'équipe Keyro est disponible 7j/7 pour répondre à vos questions et résoudre vos problèmes.</p>
+<h2>Par e-mail</h2>
+<p>support@keyro.fr &mdash; Réponse sous 24h en moyenne.</p>
+<h2>Par chat</h2>
+<p>Notre chat en direct est disponible du lundi au vendredi, de 9h à 18h (CET).</p>
+<h2>Sur les réseaux</h2>
+<p>Suivez-nous sur Twitter et Discord pour les dernières offres et nouveautés.</p>`
+  },
+  terms: {
+    title: 'Conditions générales de vente',
+    content: `<h2>1. Objet</h2>
+<p>Les présentes conditions régissent l'utilisation du site Keyro et l'achat de clés numériques.</p>
+<h2>2. Produits</h2>
+<p>Les produits vendus sur Keyro sont des clés d'activation numériques. Ils ne comprennent pas de support physique. Toute vente est définitive une fois la clé révélée.</p>
+<h2>3. Prix et paiement</h2>
+<p>Les prix sont indiqués en euros TTC. Keyro se réserve le droit de modifier les prix à tout moment. Le paiement est exigé à la commande.</p>
+<h2>4. Livraison</h2>
+<p>Les clés sont livrées par voie électronique, généralement instantanément après confirmation du paiement.</p>
+<h2>5. Responsabilité</h2>
+<p>Keyro ne saurait être tenu responsable en cas de mauvaise utilisation de la clé par l'acheteur, notamment en cas d'activation sur un compte d'une région incompatible.</p>`
+  },
+  privacy: {
+    title: 'Politique de confidentialité',
+    content: `<h2>Collecte des données</h2>
+<p>Keyro collecte uniquement les données nécessaires au fonctionnement du service : adresse e-mail, nom, données de paiement.</p>
+<h2>Utilisation des données</h2>
+<p>Vos données sont utilisées pour le traitement des commandes, la communication liée à votre compte, et l'amélioration de nos services.</p>
+<h2>Partage des données</h2>
+<p>Nous ne vendons jamais vos données personnelles. Elles peuvent être partagées avec nos prestataires de paiement exclusivement pour le traitement des transactions.</p>
+<h2>Vos droits</h2>
+<p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, et de suppression de vos données. Contactez-nous à privacy@keyro.fr.</p>`
+  },
+  legal: {
+    title: 'Mentions légales',
+    content: `<h2>Éditeur du site</h2>
+<p>Keyro SAS, capital social : 10 000€, RCS Paris B 123 456 789, siège social : 1 Rue de la Paix, 75002 Paris.</p>
+<h2>Directeur de la publication</h2>
+<p>Jean Dupont, Président.</p>
+<h2>Hébergement</h2>
+<p>Le site est hébergé par OVH SAS, 2 Rue Kellermann, 59100 Roubaix.</p>
+<h2>Propriété intellectuelle</h2>
+<p>L'ensemble des contenus du site (textes, images, logos) sont la propriété de Keyro ou de ses partenaires. Toute reproduction est interdite sans autorisation préalable.</p>`
+  },
+  cookies: {
+    title: 'Politique de cookies',
+    content: `<h2>Qu'est-ce qu'un cookie ?</h2>
+<p>Un cookie est un petit fichier texte déposé sur votre navigateur lors de votre visite sur un site. Il permet de mémoriser vos préférences.</p>
+<h2>Cookies utilisés</h2>
+<ul>
+<li>Cookies essentiels : nécessaires au fonctionnement du site (session, panier).</li>
+<li>Cookies analytiques : nous aident à comprendre l'utilisation du site (anonymisés).</li>
+<li>Cookies marketing : utilisés pour vous proposer des offres personnalisées.</li>
+</ul>
+<h2>Gestion des cookies</h2>
+<p>Vous pouvez à tout moment modifier vos préférences de cookies dans les paramètres de votre navigateur. La désactivation de certains cookies peut affecter votre expérience sur le site.</p>`
+  }
+};
+
+// ========================================
+// STATE
+// ========================================
+let currentUser = null;
+let cart = [];
+let wishlist = [...WISHLIST_IDS];
+let currentFilter = 'all';
+let accountTab = 'orders';
+let revealedKeys = {};
+
+// Load cart from localStorage
+try {
+  const savedCart = localStorage.getItem('keyro_demo_cart');
+  if (savedCart) cart = JSON.parse(savedCart);
+} catch(e) {}
+
+try {
+  const savedUser = localStorage.getItem('keyro_demo_user');
+  if (savedUser) currentUser = JSON.parse(savedUser);
+} catch(e) {}
+
+try {
+  const savedWishlist = localStorage.getItem('keyro_demo_wishlist');
+  if (savedWishlist) wishlist = JSON.parse(savedWishlist);
+} catch(e) {}
+
+function saveCart() {
+  try { localStorage.setItem('keyro_demo_cart', JSON.stringify(cart)); } catch(e) {}
+}
+
+function saveWishlist() {
+  try { localStorage.setItem('keyro_demo_wishlist', JSON.stringify(wishlist)); } catch(e) {}
+}
+
+function saveUser() {
+  try { if (currentUser) localStorage.setItem('keyro_demo_user', JSON.stringify(currentUser)); else localStorage.removeItem('keyro_demo_user'); } catch(e) {}
+}
+
+function updateCartBadge() {
+  const badge = document.getElementById('cartBadge');
+  if (cart.length > 0) {
+    badge.style.display = 'inline-block';
+    badge.textContent = cart.length;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function addToCart(productId) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  if (!product) return;
+  if (cart.find(item => item.id === productId)) {
+    showToast('Ce produit est déjà dans votre panier', 'info');
+    return;
+  }
+  cart.push({ id: product.id, qty: 1 });
+  saveCart();
+  updateCartBadge();
+  showToast(product.name + ' ajouté au panier', 'success');
+}
+
+function removeFromCart(productId) {
+  cart = cart.filter(item => item.id !== productId);
+  saveCart();
+  updateCartBadge();
+  render();
+}
+
+function toggleWishlist(productId) {
+  const idx = wishlist.indexOf(productId);
+  if (idx >= 0) {
+    wishlist.splice(idx, 1);
+    showToast('Retiré de la liste de souhaits', 'info');
+  } else {
+    wishlist.push(productId);
+    showToast('Ajouté à la liste de souhaits', 'success');
+  }
+  saveWishlist();
+  render();
+}
+
+function isInWishlist(productId) {
+  return wishlist.includes(productId);
+}
+
+// ========================================
+// PLATFORM GRADIENTS
+// ========================================
+function getGradient(product) {
+  const gradients = {
+    steam: 'linear-gradient(135deg,#1b2838,#2a475e)',
+    xbox: 'linear-gradient(135deg,#107c10,#0a5a0a)',
+    playstation: 'linear-gradient(135deg,#003087,#00008b)',
+    nintendo: 'linear-gradient(135deg,#e60012,#3d7a3a)',
+    giftcard: 'linear-gradient(135deg,#1b2838,#2a475e)',
+    software: 'linear-gradient(135deg,#0078d4,#004578)',
+  };
+  const platform = PLATFORMS.find(p => p.id === product.platformId);
+  return platform ? (gradients[platform.slug] || gradients.steam) : gradients.steam;
+}
+
+function getPlatformSlug(product) {
+  const platform = PLATFORMS.find(p => p.id === product.platformId);
+  return platform ? platform.slug : 'steam';
+}
+
+// ========================================
+// TOAST SYSTEM
+// ========================================
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  const icons = {
+    success: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+    error: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E85454" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E89A2D" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+  };
+  toast.innerHTML = (icons[type] || icons.info) + '<span>' + message + '</span>';
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(100%)';
+    toast.style.transition = 'all 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// ========================================
+// MODAL SYSTEM
+// ========================================
+function openModal(html) {
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+// ========================================
+// AUTH
+// ========================================
+function handleAuthClick() {
+  if (currentUser) {
+    navigate('#/account');
+  } else {
+    showLoginModal();
+  }
+}
+
+function showLoginModal() {
+  openModal(`
+    <h2>Connexion</h2>
+    <p class="subtitle">Accédez à votre compte Keyro</p>
+    <div class="modal-field">
+      <label for="loginEmail">Adresse e-mail</label>
+      <input type="email" id="loginEmail" placeholder="jean@exemple.fr">
+    </div>
+    <div class="modal-field">
+      <label for="loginPassword">Mot de passe</label>
+      <input type="password" id="loginPassword" placeholder="Votre mot de passe">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Se connecter</button>
+    <div class="switch-link">Pas encore de compte ? <a onclick="showRegisterModal()">Créer un compte</a></div>
+  `);
+}
+
+function showRegisterModal() {
+  openModal(`
+    <h2>Créer un compte</h2>
+    <p class="subtitle">Rejoignez Keyro en quelques secondes</p>
+    <div class="modal-field">
+      <label for="regName">Nom complet</label>
+      <input type="text" id="regName" placeholder="Jean Dupont">
+    </div>
+    <div class="modal-field">
+      <label for="regEmail">Adresse e-mail</label>
+      <input type="email" id="regEmail" placeholder="jean@exemple.fr">
+    </div>
+    <div class="modal-field">
+      <label for="regPassword">Mot de passe</label>
+      <input type="password" id="regPassword" placeholder="Minimum 8 caractères">
+    </div>
+    <button class="btn-primary" onclick="doRegister()">Créer mon compte</button>
+    <div class="switch-link">Déjà un compte ? <a onclick="showLoginModal()">Se connecter</a></div>
+  `);
+}
+
+function doLogin() {
+  currentUser = { name: 'Jean Dupont', email: 'jean@exemple.fr' };
+  saveUser();
+  updateAuthUI();
+  closeModal();
+  showToast('Bienvenue, Jean !', 'success');
+  render();
+}
+
+function doRegister() {
+  currentUser = { name: 'Jean Dupont', email: 'jean@exemple.fr' };
+  saveUser();
+  updateAuthUI();
+  closeModal();
+  showToast('Compte créé avec succès !', 'success');
+  render();
+}
+
+function logout() {
+  currentUser = null;
+  localStorage.removeItem('keyro_demo_user');
+  updateAuthUI();
+  showToast('Déconnecté', 'info');
+  navigate('#/');
+}
+
+function updateAuthUI() {
+  const label = document.getElementById('authLabel');
+  const btn = document.getElementById('authBtn');
+  if (currentUser) {
+    label.textContent = currentUser.name.split(' ')[0];
+    btn.classList.add('user-btn');
+  } else {
+    label.textContent = 'Connexion';
+    btn.classList.remove('user-btn');
+  }
+}
+
+// ========================================
+// SEARCH
+// ========================================
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+
+searchInput.addEventListener('input', function() {
+  const query = this.value.trim().toLowerCase();
+  if (query.length < 2) {
+    searchResults.classList.remove('open');
+    return;
+  }
+  const matches = PRODUCTS.filter(p => p.name.toLowerCase().includes(query));
+  if (matches.length === 0) {
+    searchResults.innerHTML = '<div style="padding:16px;color:var(--fg-muted);text-align:center;">Aucun résultat</div>';
+  } else {
+    searchResults.innerHTML = matches.map(p => `
+      <div class="search-result-item" onclick="searchInput.value='';searchResults.classList.remove('open');navigate('#/product/${p.id}')">
+        <div class="search-result-thumb" style="background:${getGradient(p)};border-radius:6px;"></div>
+        <div class="search-result-info">
+          <div class="search-result-name">${p.name}</div>
+          <div class="search-result-meta">${p.platform} &middot; ${p.region} &middot; ${p.genres.join(', ')}</div>
+        </div>
+        <div class="search-result-price">${p.salePrice.toFixed(2)}€</div>
+      </div>
+    `).join('');
+  }
+  searchResults.classList.add('open');
+});
+
+searchInput.addEventListener('blur', () => {
+  setTimeout(() => searchResults.classList.remove('open'), 200);
+});
+
+searchInput.addEventListener('focus', () => {
+  if (searchInput.value.trim().length >= 2) {
+    searchInput.dispatchEvent(new Event('input'));
+  }
+});
+
+// ========================================
+// MOBILE NAV
+// ========================================
+function toggleMobileNav() {
+  document.getElementById('mobileNav').classList.toggle('open');
+  document.getElementById('mobileOverlay').classList.toggle('open');
+}
+
+// ========================================
+// ROUTER
+// ========================================
+function navigate(hash) {
+  window.location.hash = hash;
+}
+
+function getRoute() {
+  const hash = window.location.hash || '#/';
+  if (hash === '#/' || hash === '') return { page: 'home' };
+  if (hash.startsWith('#/product/')) {
+    const id = parseInt(hash.split('/').pop());
+    return { page: 'product', id };
+  }
+  if (hash === '#/cart') return { page: 'cart' };
+  if (hash === '#/account') return { page: 'account' };
+  if (hash.startsWith('#/info/')) {
+    const slug = hash.split('/').pop();
+    return { page: 'info', slug };
+  }
+  return { page: 'home' };
+}
+
+function render() {
+  const route = getRoute();
+  const app = document.getElementById('app');
+  updateCartBadge();
+  updateAuthUI();
+
+  // Update active nav
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+
+  switch(route.page) {
+    case 'home': renderHome(app); break;
+    case 'product': renderProduct(app, route.id); break;
+    case 'cart': renderCart(app); break;
+    case 'account': renderAccount(app); break;
+    case 'info': renderInfo(app, route.slug); break;
+    default: renderHome(app);
+  }
+
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+// ========================================
+// HOME PAGE
+// ========================================
+function renderHome(container) {
+  const filtered = currentFilter === 'all'
+    ? PRODUCTS
+    : PRODUCTS.filter(p => getPlatformSlug(p) === currentFilter);
+
+  const topDeals = [...PRODUCTS].sort((a, b) => b.discount - a.discount).slice(0, 4);
+  const newReleases = PRODUCTS.filter(p => p.id >= 14 || p.id <= 5).slice(0, 4);
+
+  container.innerHTML = `
+    <div class="container">
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-banner">
+          <div class="hero-badge">&#127881; Jusqu'à -88% sur les meilleures clés</div>
+          <h1>Vos jeux préférés,<br><span class="highlight">au meilleur prix.</span></h1>
+          <p>Des milliers de clés numériques livrées instantanément. Steam, PlayStation, Xbox, Nintendo et plus encore.</p>
+          <div class="hero-actions">
+            <button class="btn-primary" onclick="document.getElementById('productsSection').scrollIntoView({behavior:'smooth'})">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Voir le catalogue
+            </button>
+            <button class="btn-secondary" onclick="navigate('#/info/help')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Comment ça marche ?
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Category Bar -->
+      <section class="category-bar">
+        <h2>Parcourir par plateforme</h2>
+        <div class="category-pills">
+          <button class="category-pill ${currentFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">Toutes</button>
+          <button class="category-pill ${currentFilter === 'steam' ? 'active' : ''}" onclick="setFilter('steam')">&#127918; Steam</button>
+          <button class="category-pill ${currentFilter === 'xbox' ? 'active' : ''}" onclick="setFilter('xbox')">&#127918; Xbox</button>
+          <button class="category-pill ${currentFilter === 'playstation' ? 'active' : ''}" onclick="setFilter('playstation')">&#127918; PlayStation</button>
+          <button class="category-pill ${currentFilter === 'nintendo' ? 'active' : ''}" onclick="setFilter('nintendo')">&#127918; Nintendo</button>
+          <button class="category-pill ${currentFilter === 'giftcard' ? 'active' : ''}" onclick="setFilter('giftcard')">&#127873; Cartes Cadeaux</button>
+          <button class="category-pill ${currentFilter === 'software' ? 'active' : ''}" onclick="setFilter('software')">&#128187; Logiciels</button>
+        </div>
+      </section>
+
+      <!-- Top Deals -->
+      <section class="section" id="dealsSection">
+        <div class="section-header">
+          <h2>&#128293; Meilleures offres</h2>
+          <a href="#" onclick="currentFilter='all';render();return false;">Voir tout &rarr;</a>
+        </div>
+        <div class="product-grid">
+          ${topDeals.map(p => productCard(p)).join('')}
+        </div>
+      </section>
+
+      <!-- Products Grid -->
+      <section class="section" id="productsSection">
+        <div class="section-header">
+          <h2>&#127918; Tous les produits${currentFilter !== 'all' ? ' &mdash; ' + PLATFORMS.find(pl => pl.slug === currentFilter)?.name : ''}</h2>
+        </div>
+        <div class="product-grid">
+          ${filtered.map(p => productCard(p)).join('')}
+        </div>
+      </section>
+
+      <!-- Reviews -->
+      <section class="reviews-section">
+        <div class="section-header">
+          <h2>&#11088; Avis clients</h2>
+        </div>
+        <div class="reviews-grid">
+          ${REVIEWS.map(r => `
+            <div class="review-card">
+              <div class="review-header">
+                <div class="review-avatar">${r.name.charAt(0)}</div>
+                <div>
+                  <div class="review-name">${r.name}</div>
+                  <div class="review-stars">${'&#9733;'.repeat(r.stars)}${'&#9734;'.repeat(5-r.stars)}</div>
+                </div>
+              </div>
+              <div class="review-text">${r.text}</div>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function productCard(p) {
+  const gradient = getGradient(p);
+  const wishlisted = isInWishlist(p.id);
+  return `
+    <div class="product-card" onclick="navigate('#/product/${p.id}')">
+      <div class="product-card-img" style="background:${gradient};">
+        <span class="platform-badge">${p.platform}</span>
+        <span class="discount-badge">-${p.discount}%</span>
+        <div class="game-title-overlay">${p.name}</div>
+      </div>
+      <div class="product-card-body">
+        <div class="product-card-genre">${p.genres.join(' / ')}</div>
+        <div class="product-card-region">&#127760; ${p.region}</div>
+        <div class="product-card-pricing">
+          <span class="original-price">${p.originalPrice.toFixed(2)}€</span>
+          <span class="sale-price">${p.salePrice.toFixed(2)}€</span>
+        </div>
+        <div class="product-card-actions" onclick="event.stopPropagation()">
+          <button class="btn-add-cart" onclick="addToCart(${p.id})">Ajouter au panier</button>
+          <button class="btn-wishlist ${wishlisted ? 'wishlisted' : ''}" onclick="toggleWishlist(${p.id})" title="Liste de souhaits">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="${wishlisted ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function setFilter(filter) {
+  currentFilter = filter;
+  render();
+}
+
+// ========================================
+// PRODUCT DETAIL PAGE
+// ========================================
+function renderProduct(container, id) {
+  const p = PRODUCTS.find(pr => pr.id === id);
+  if (!p) {
+    container.innerHTML = '<div class="container" style="padding:64px 0;text-align:center;color:var(--fg-muted);"><h2>Produit introuvable</h2><p>Ce produit n\'existe pas.</p><br><a href="#/" class="btn-primary">Retour à l\'accueil</a></div>';
+    return;
+  }
+
+  const gradient = getGradient(p);
+  const wishlisted = isInWishlist(p.id);
+  const similar = PRODUCTS.filter(pr => pr.id !== p.id && pr.genres.some(g => p.genres.includes(g))).slice(0, 4);
+
+  container.innerHTML = `
+    <div class="container">
+      <div class="product-detail">
+        <a href="#/" class="pd-back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Retour
+        </a>
+
+        <div class="pd-grid">
+          <div class="pd-left">
+            <div class="pd-image" style="background:${gradient};">
+              <div class="game-title-large">${p.name}</div>
+            </div>
+
+            <div style="margin-top:24px;">
+              <h1>${p.name}</h1>
+              <div class="pd-meta">
+                <span class="pd-meta-tag">${p.platform}</span>
+                <span class="pd-meta-tag">${p.region}</span>
+                ${p.genres.map(g => '<span class="pd-meta-tag">' + g + '</span>').join('')}
+              </div>
+              <p class="pd-description">${p.description}</p>
+            </div>
+
+            <div class="pd-sysreqs">
+              <h3>Configuration requise</h3>
+              <ul>
+                <li><strong>Système</strong> ${p.sysReqs.os}</li>
+                <li><strong>Processeur</strong> ${p.sysReqs.cpu}</li>
+                <li><strong>Mémoire</strong> ${p.sysReqs.ram}</li>
+                <li><strong>GPU</strong> ${p.sysReqs.gpu}</li>
+                <li><strong>Stockage</strong> ${p.sysReqs.storage}</li>
+              </ul>
+            </div>
+
+            <!-- Reviews on product page -->
+            <div class="reviews-section" style="padding-top:0;">
+              <h2>Avis clients</h2>
+              <div class="reviews-grid">
+                ${REVIEWS.map(r => `
+                  <div class="review-card">
+                    <div class="review-header">
+                      <div class="review-avatar">${r.name.charAt(0)}</div>
+                      <div>
+                        <div class="review-name">${r.name}</div>
+                        <div class="review-stars">${'&#9733;'.repeat(r.stars)}${'&#9734;'.repeat(5-r.stars)}</div>
+                      </div>
+                    </div>
+                    <div class="review-text">${r.text}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <div class="pd-sidebar">
+            <span class="platform-tag">${p.platform}</span>
+            <div class="price-block">
+              <span class="original-price">${p.originalPrice.toFixed(2)}€</span>
+              <span class="sale-price">${p.salePrice.toFixed(2)}€</span>
+              <span class="discount-tag">-${p.discount}%</span>
+            </div>
+            <div class="region-info">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Région : ${p.region}
+            </div>
+            <button class="btn-add-cart-lg" onclick="addToCart(${p.id})">Ajouter au panier</button>
+            <button class="btn-wishlist-lg" onclick="toggleWishlist(${p.id})">${wishlisted ? '&#10084; Dans ma liste de souhaits' : '&#129293; Ajouter à ma liste de souhaits'}</button>
+            <div class="delivery-info">
+              <div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Livraison instantanée par e-mail
+              </div>
+              <div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Clé officielle et légitime
+              </div>
+              <div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Garantie de remboursement 14 jours
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Similar Products -->
+        ${similar.length > 0 ? `
+          <section class="section" style="margin-top:32px;">
+            <div class="section-header">
+              <h2>Produits similaires</h2>
+            </div>
+            <div class="product-grid">
+              ${similar.map(pr => productCard(pr)).join('')}
+            </div>
+          </section>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ========================================
+// CART PAGE
+// ========================================
+function renderCart(container) {
+  const cartProducts = cart.map(item => {
+    const p = PRODUCTS.find(pr => pr.id === item.id);
+    return p ? { ...p, qty: item.qty } : null;
+  }).filter(Boolean);
+
+  const total = cartProducts.reduce((sum, p) => sum + p.salePrice * p.qty, 0);
+  const originalTotal = cartProducts.reduce((sum, p) => sum + p.originalPrice * p.qty, 0);
+  const savings = originalTotal - total;
+
+  if (cartProducts.length === 0) {
+    container.innerHTML = `
+      <div class="container">
+        <div class="cart-page">
+          <h1>Panier</h1>
+          <div class="cart-empty">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <h3>Votre panier est vide</h3>
+            <p>Découvrez nos offres et ajoutez des jeux à votre panier.</p>
+            <br>
+            <a href="#/" class="btn-primary">Voir le catalogue</a>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="container">
+      <div class="cart-page">
+        <h1>Panier <span style="font-size:18px;color:var(--fg-muted);font-weight:400;">(${cartProducts.length} article${cartProducts.length > 1 ? 's' : ''})</span></h1>
+        <div class="cart-layout">
+          <div class="cart-items">
+            ${cartProducts.map(p => `
+              <div class="cart-item">
+                <div class="cart-item-img" style="background:${getGradient(p)};"></div>
+                <div class="cart-item-info">
+                  <h3>${p.name}</h3>
+                  <div class="meta">${p.platform} &middot; ${p.region} &middot; ${p.genres.join(', ')}</div>
+                </div>
+                <div class="cart-item-price">
+                  <div class="sale-price">${(p.salePrice * p.qty).toFixed(2)}€</div>
+                  <div class="original-price">${(p.originalPrice * p.qty).toFixed(2)}€</div>
+                </div>
+                <button class="cart-item-remove" onclick="removeFromCart(${p.id})" title="Supprimer">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+            `).join('')}
+          </div>
+          <div class="cart-summary">
+            <h3>Récapitulatif</h3>
+            <div class="cart-summary-row">
+              <span>Sous-total (${cartProducts.length} article${cartProducts.length > 1 ? 's' : ''})</span>
+              <span>${originalTotal.toFixed(2)}€</span>
+            </div>
+            <div class="cart-summary-row" style="color:var(--success);">
+              <span>Réduction</span>
+              <span>-${savings.toFixed(2)}€</span>
+            </div>
+            <div class="cart-summary-total">
+              <span>Total</span>
+              <span class="total-price">${total.toFixed(2)}€</span>
+            </div>
+            <button class="btn-checkout" onclick="handleCheckout()">Passer la commande</button>
+            <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--fg-dim);">Paiement sécurisé &middot; Livraison instantanée</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function handleCheckout() {
+  if (!currentUser) {
+    showToast('Veuillez vous connecter pour commander', 'info');
+    showLoginModal();
+    return;
+  }
+  if (cart.length === 0) {
+    showToast('Votre panier est vide', 'error');
+    return;
+  }
+  showToast('Commande simulée &mdash; aucune transaction réelle', 'info');
+  cart = [];
+  saveCart();
+  updateCartBadge();
+  navigate('#/account');
+}
+
+// ========================================
+// ACCOUNT PAGE
+// ========================================
+function renderAccount(container) {
+  if (!currentUser) {
+    container.innerHTML = `
+      <div class="container">
+        <div class="login-prompt">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <h2>Connectez-vous pour accéder à votre compte</h2>
+          <p>Vous devez être connecté pour voir vos commandes et votre liste de souhaits.</p>
+          <button class="btn-primary" onclick="showLoginModal()">Se connecter</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="container">
+      <div class="account-page">
+        <h1>Mon compte</h1>
+        <p style="color:var(--fg-muted);margin-bottom:24px;">Bonjour, <strong>${currentUser.name}</strong> &middot; <a href="#" onclick="logout();return false;" style="color:var(--accent);">Déconnexion</a></p>
+
+        <div class="account-tabs">
+          <button class="account-tab ${accountTab === 'orders' ? 'active' : ''}" onclick="accountTab='orders';render();">Commandes</button>
+          <button class="account-tab ${accountTab === 'wishlist' ? 'active' : ''}" onclick="accountTab='wishlist';render();">Liste de souhaits</button>
+          <button class="account-tab ${accountTab === 'settings' ? 'active' : ''}" onclick="accountTab='settings';render();">Paramètres</button>
+        </div>
+
+        <div class="account-content ${accountTab === 'orders' ? 'active' : ''}" id="ordersTab">
+          ${renderOrders()}
+        </div>
+
+        <div class="account-content ${accountTab === 'wishlist' ? 'active' : ''}" id="wishlistTab">
+          ${renderWishlist()}
+        </div>
+
+        <div class="account-content ${accountTab === 'settings' ? 'active' : ''}" id="settingsTab">
+          ${renderSettings()}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderOrders() {
+  return ORDERS.map(order => {
+    const product = PRODUCTS.find(p => p.id === order.productId);
+    const keyId = order.id;
+    const isRevealed = revealedKeys[keyId];
+    return `
+      <div class="order-card">
+        <div class="order-header">
+          <span class="order-id">${order.id}</span>
+          <span class="order-status ${order.status}">${order.status === 'delivered' ? 'Livré' : 'En traitement'}</span>
+        </div>
+        <div class="order-details">
+          <span class="order-product">${product ? product.name : 'Produit'}</span>
+          <span class="order-price">${order.price.toFixed(2)}€</span>
+        </div>
+        <div style="font-size:13px;color:var(--fg-dim);margin-top:4px;">Commandé le ${order.date}</div>
+        ${order.status === 'delivered' ? `
+          <div class="order-key-section">
+            ${isRevealed ? `
+              <div class="revealed-key">
+                <span>${order.key}</span>
+                <button class="btn-copy-key" onclick="copyKey('${order.key}')">Copier</button>
+              </div>
+            ` : `
+              <button class="btn-reveal-key" onclick="revealKey('${keyId}')">Révéler ma clé</button>
+            `}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderWishlist() {
+  const wishProducts = wishlist.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean);
+  if (wishProducts.length === 0) {
+    return '<p style="color:var(--fg-muted);padding:24px 0;">Votre liste de souhaits est vide.</p>';
+  }
+  return `<div class="wishlist-grid">${wishProducts.map(p => productCard(p)).join('')}</div>`;
+}
+
+function renderSettings() {
+  return `
+    <div class="settings-section">
+      <h3>Informations personnelles</h3>
+      <div class="settings-row">
+        <span class="settings-label">Nom</span>
+        <span class="settings-value">${currentUser ? currentUser.name : ''}</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">E-mail</span>
+        <span class="settings-value">${currentUser ? currentUser.email : ''}</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">Mot de passe</span>
+        <span class="settings-value">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3>Préférences</h3>
+      <div class="settings-row">
+        <span class="settings-label">Langue</span>
+        <span class="settings-value">Français</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">Devise</span>
+        <span class="settings-value">EUR (€)</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">Notifications e-mail</span>
+        <span class="settings-value">Activées</span>
+      </div>
+    </div>
+  `;
+}
+
+function revealKey(keyId) {
+  revealedKeys[keyId] = true;
+  render();
+  showToast('Clé révélée avec succès', 'success');
+}
+
+function copyKey(key) {
+  navigator.clipboard.writeText(key).then(() => {
+    showToast('Clé copiée dans le presse-papiers', 'success');
+  }).catch(() => {
+    showToast('Impossible de copier', 'error');
+  });
+}
+
+// ========================================
+// INFO PAGES
+// ========================================
+function renderInfo(container, slug) {
+  const page = INFO_PAGES[slug];
+  if (!page) {
+    container.innerHTML = '<div class="container" style="padding:64px 0;text-align:center;color:var(--fg-muted);"><h2>Page introuvable</h2><p>Cette page n\'existe pas.</p><br><a href="#/" class="btn-primary">Retour à l\'accueil</a></div>';
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="container">
+      <div class="info-page">
+        <a href="#/" class="pd-back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Retour
+        </a>
+        <h1>${page.title}</h1>
+        <div class="info-content">
+          ${page.content}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ========================================
+// INIT
+// ========================================
+window.addEventListener('hashchange', render);
+window.addEventListener('DOMContentLoaded', () => {
+  updateCartBadge();
+  updateAuthUI();
+  render();
+});
+
+// Close search results on click outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-bar')) {
+    searchResults.classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>
