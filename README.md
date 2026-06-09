@@ -8,7 +8,7 @@ A full-stack digital game key marketplace built with Node.js, Express, MySQL, an
 Browse, purchase, and deliver CD keys, gift cards, and shared accounts — all in French.
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen?style=for-the-badge)](https://labssynova-coder.github.io/keyro-marketplace/)
-[![API Docs](https://img.shields.io/badge/API-docs-blue?style=for-the-badge)](https://labssynova-coder.github.io/keyro-marketplace/api.html)
+[![Admin Panel](https://img.shields.io/badge/admin-panel-blue?style=for-the-badge)](https://labssynova-coder.github.io/keyro-marketplace/admin.html)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge)](./LICENSE)
 
 </div>
@@ -20,9 +20,31 @@ Browse, purchase, and deliver CD keys, gift cards, and shared accounts — all i
 | Demo | Description | URL |
 |------|-------------|-----|
 | **Frontend** | Interactive storefront with mock data — browse products, cart, account, wishlist | [labssynova-coder.github.io/keyro-marketplace](https://labssynova-coder.github.io/keyro-marketplace/) |
-| **API Docs** | Complete REST API reference with example requests & responses | [labssynova-coder.github.io/keyro-marketplace/api.html](https://labssynova-coder.github.io/keyro-marketplace/api.html) |
+| **Admin Panel** | Full admin dashboard with mock data — products, orders, users, reviews, keys | [labssynova-coder.github.io/keyro-marketplace/admin.html](https://labssynova-coder.github.io/keyro-marketplace/admin.html) |
 
 > ⚠️ The demos use **mock data** — no real transactions, no real database.
+
+---
+
+## 📸 Screenshots
+
+### Frontend Storefront
+
+![Keyro Frontend](screenshots/frontend.png)
+
+### Admin Panel
+
+| Dashboard | Products |
+|-----------|----------|
+| ![Dashboard](screenshots/admin-dashboard.png) | ![Products](screenshots/admin-products.png) |
+
+| Orders | Users |
+|--------|-------|
+| ![Orders](screenshots/admin-orders.png) | ![Users](screenshots/admin-users.png) |
+
+| Reviews | Keys |
+|---------|------|
+| ![Reviews](screenshots/admin-reviews.png) | ![Keys](screenshots/admin-keys.png) |
 
 ---
 
@@ -148,9 +170,7 @@ keyro-marketplace/
 │   ├── img/products/          # Product images
 │   ├── index.html              # Customer-facing SPA
 │   └── admin.html             # Admin panel SPA
-├── demo/
-│   ├── index.html              # Static frontend demo (mock data)
-│   └── api.html                # Static API documentation demo
+├── screenshots/                # Demo screenshots for README
 ├── .env.example                # Environment template
 ├── .gitignore
 ├── package.json
@@ -259,7 +279,7 @@ POST   /api/payments/confirm    # Webhook: confirm payment & assign keys
 
 ### Cart, Wishlist, Reviews, Platforms, Genres, Users, Admin, Steam, Site
 
-See the [interactive API documentation](https://labssynova-coder.github.io/keyro-marketplace/api.html) for complete details on all endpoints including request/response examples.
+See the [admin panel demo](https://labssynova-coder.github.io/keyro-marketplace/admin.html) for a live interactive preview, or check the server routes for complete endpoint details.
 
 ---
 
